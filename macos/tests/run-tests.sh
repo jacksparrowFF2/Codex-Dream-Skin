@@ -55,7 +55,7 @@ BACKUP="$TMP/theme-backup.json"
 "$NODE" "$ROOT/scripts/theme-config.mjs" restore "$CONFIG" "$BACKUP" >/dev/null
 /usr/bin/cmp -s "$CONFIG" "$TMP/original.toml"
 
-/usr/bin/env -u HOME /bin/bash -c '. "$1/scripts/common-macos.sh"; [ -n "$HOME" ] && [ "$SKIN_VERSION" = "1.0.0" ]' _ "$ROOT"
+/usr/bin/env -u HOME /bin/bash -c '. "$1/scripts/common-macos.sh"; [ -n "$HOME" ] && [ "$SKIN_VERSION" = "1.1.0" ]' _ "$ROOT"
 "$ROOT/scripts/doctor-macos.sh" >/dev/null
 
 printf 'PASS: syntax, payload, custom-theme, config round-trip, HOME recovery, signature, and doctor checks.\n'

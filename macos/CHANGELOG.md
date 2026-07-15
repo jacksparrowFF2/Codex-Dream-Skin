@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.1.0 — 2026-07-16
+
+### 新增
+
+- SwiftBar 菜单栏入口（`Install Menu Bar.command`）：应用 / 暂停 / 换图 / 切换已保存主题 / 从图片文件夹加载 / 完全恢复
+- 主题库（`themes/`）与图片投放目录（`images/`）动态加载，不再把 README 图库合成图当背景素材
+- 按 Codex 应用浅色 / 深色自动切换皮肤壳（`data-dream-shell`）
+
+### 改进
+
+- CDP 已就绪时热切换主题（重启 injector + 短时注入），换图更快
+- 注入校验放宽（项目选择器等可选），避免误杀已生效皮肤
+- 注入守护优先 `nohup`；暂停状态与路径大小写下停止逻辑更稳
+- 安装时不再强制 `appearanceTheme=dark`，只备份桌面外观相关键，便于恢复与自动适配
+
+### 视觉
+
+- 以原版暗色 portal CSS 为结构底，叠加 light 壳与更薄横幅遮罩，减轻「换图看不清」
+- 示例纯横幅：`docs/images/banner-arina-hashimoto-pure-no-ui.png`（无人机 UI 合成）
+
+### 说明
+
+- `docs/images/gallery/` 仅为效果预览，不要当 `theme` 背景导入
+
+---
+
 ## 1.0.0 — 2026-07-15
 
 - 发布 macOS 通用主题制作器，而不是固定角色皮肤。
