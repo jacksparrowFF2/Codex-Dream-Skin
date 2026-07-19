@@ -7,25 +7,107 @@
   --dream-surface: color-mix(in oklab, oklch(0.988 0.004 35) 97%, var(--dream-accent));
   --dream-surface-raised: color-mix(in oklab, oklch(0.995 0.003 35) 98%, var(--dream-accent));
   --dream-sidebar: color-mix(in oklab, oklch(0.965 0.006 35) 94%, var(--dream-accent));
-  --dream-text: oklch(0.25 0.018 30);
-  --dream-text-muted: oklch(0.48 0.018 30);
-  --dream-line: color-mix(in oklab, oklch(0.75 0.012 30) 80%, var(--dream-accent));
+  --dream-text: oklch(0.2 0.018 30);
+  --dream-text-muted: oklch(0.4 0.018 30);
+  --dream-line: color-mix(in oklab, oklch(0.64 0.012 30) 82%, var(--dream-accent));
   --dream-line-soft: color-mix(in oklab, transparent 76%, var(--dream-accent));
   --dream-accent-soft: color-mix(in oklab, var(--dream-accent) 14%, var(--dream-surface));
   --dream-accent-hover: color-mix(in oklab, var(--dream-accent) 20%, var(--dream-surface));
   --dream-hero-shade: color-mix(in oklab, var(--dream-surface) 93%, transparent);
   --dream-ambient-opacity: .18;
   --dream-shadow: 0 16px 42px color-mix(in oklab, var(--dream-accent) 9%, transparent);
-  --dream-immersive-edge: color-mix(in oklab, var(--dream-surface) 46%, transparent);
-  --dream-immersive-mid: color-mix(in oklab, var(--dream-surface) 28%, transparent);
-  --dream-immersive-far: color-mix(in oklab, var(--dream-surface) 14%, transparent);
-  --dream-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 50%, transparent);
+  --dream-immersive-edge: color-mix(in oklab, var(--dream-surface) 88%, transparent);
+  --dream-immersive-mid: color-mix(in oklab, var(--dream-surface) 72%, transparent);
+  --dream-immersive-far: color-mix(in oklab, var(--dream-surface) 46%, transparent);
+  --dream-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 88%, transparent);
   --dream-task-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 72%, transparent);
-  --dream-immersive-composer: color-mix(in oklab, var(--dream-surface-raised) 76%, var(--dream-accent) 4%);
+  --dream-immersive-composer: color-mix(in oklab, var(--dream-surface-raised) 94%, var(--dream-accent) 6%);
   --dream-immersive-line: color-mix(in oklab, var(--dream-line) 76%, transparent);
   --dream-task-immersive-edge: color-mix(in oklab, var(--dream-surface) 86%, transparent);
   --dream-task-immersive-mid: color-mix(in oklab, var(--dream-surface) 78%, transparent);
   --dream-task-immersive-far: color-mix(in oklab, var(--dream-surface) 66%, transparent);
+  --dream-menu-surface: color-mix(in oklab, var(--dream-surface-raised) 90%, transparent);
+  --dream-menu-shadow: 0 18px 44px color-mix(in oklab, var(--dream-canvas) 22%, transparent);
+  --dream-secondary-panel: color-mix(in oklab, var(--dream-surface) 82%, transparent);
+  --dream-summary-panel: color-mix(in oklab, var(--dream-surface-raised) 88%, transparent);
+  /* Codex appearance presets can carry a completely different native accent
+     (for example purple tokens under a blue character theme). Keep semantic
+     success/error colors native, but remap shared chrome to the active skin. */
+  --color-token-foreground: var(--dream-text) !important;
+  --color-token-text-primary: var(--dream-text) !important;
+  --color-token-editor-foreground: var(--dream-text) !important;
+  --color-token-input-foreground: var(--dream-text) !important;
+  --color-token-dropdown-foreground: var(--dream-text) !important;
+  --color-token-icon-foreground: var(--dream-text) !important;
+  --color-token-text-preformat-foreground: var(--dream-text) !important;
+  --color-token-radio-active-foreground: var(--dream-text) !important;
+  --color-token-checkbox-foreground: var(--dream-text) !important;
+  --color-token-list-active-selection-foreground: var(--dream-text) !important;
+  --color-token-list-active-selection-icon-foreground: var(--dream-text) !important;
+  --color-token-menubar-selection-foreground: var(--dream-text) !important;
+  --color-token-terminal-foreground: var(--dream-text) !important;
+  --color-token-terminal-ansi-white: var(--dream-text) !important;
+  --color-token-terminal-ansi-bright-white: var(--dream-text) !important;
+  --color-token-text-secondary: var(--dream-text-muted) !important;
+  --color-token-text-tertiary: color-mix(in oklab, var(--dream-text-muted) 82%, transparent) !important;
+  --color-token-description-foreground: color-mix(in oklab, var(--dream-text-muted) 82%, transparent) !important;
+  --color-token-input-placeholder-foreground: color-mix(in oklab, var(--dream-text-muted) 76%, transparent) !important;
+  --color-token-disabled-foreground: color-mix(in oklab, var(--dream-text-muted) 66%, transparent) !important;
+  --color-token-primary: var(--dream-accent) !important;
+  --color-token-link: var(--dream-accent) !important;
+  --color-token-text-link-foreground: var(--dream-accent) !important;
+  --color-token-text-link-active-foreground: var(--dream-accent) !important;
+  --color-token-focus-border: var(--dream-accent) !important;
+  --color-token-list-focus-outline: var(--dream-accent) !important;
+  --color-token-charts-blue: var(--dream-accent) !important;
+  --color-token-button-background: var(--dream-accent) !important;
+  --color-token-button-foreground: var(--dream-accent-ink) !important;
+  --color-token-on-accent: var(--dream-accent-ink) !important;
+  --color-token-activity-bar-badge-background: var(--dream-accent) !important;
+  --color-token-activity-bar-badge-foreground: var(--dream-accent-ink) !important;
+  --color-token-progress-bar-background: var(--dream-accent) !important;
+  --color-token-terminal-ansi-blue: var(--dream-accent) !important;
+  --color-token-terminal-ansi-bright-blue: var(--dream-accent) !important;
+  --color-token-terminal-ansi-cyan: var(--dream-accent) !important;
+  --color-token-terminal-ansi-bright-cyan: var(--dream-accent) !important;
+  --color-token-bg-primary: var(--dream-sidebar) !important;
+  --color-token-main-surface-primary: var(--dream-surface) !important;
+  --color-token-side-bar-background: var(--dream-sidebar) !important;
+  --color-token-bg-secondary: color-mix(in oklab, var(--dream-sidebar) 90%, transparent) !important;
+  --color-token-bg-tertiary: color-mix(in oklab, var(--dream-sidebar) 82%, transparent) !important;
+  --color-token-dropdown-background: var(--dream-menu-surface) !important;
+  --color-token-menu-background: var(--dream-menu-surface) !important;
+  --color-token-input-background: var(--dream-immersive-composer) !important;
+  --color-token-editor-background: var(--dream-surface) !important;
+  --color-token-editor-widget-background: var(--dream-menu-surface) !important;
+  --color-token-terminal-background: var(--dream-surface) !important;
+  --color-token-text-preformat-background: var(--dream-immersive-composer) !important;
+  --color-token-text-code-block-background: var(--dream-accent-soft) !important;
+  --color-token-editor-selection-background: var(--dream-accent-soft) !important;
+  --color-token-editor-find-match-background: var(--dream-accent-soft) !important;
+  --color-token-editor-find-match-highlight-background: var(--dream-accent-soft) !important;
+  --color-token-editor-group-drop-into-prompt-background: var(--dream-accent-soft) !important;
+  --color-token-editor-group-drop-background: var(--dream-accent-soft) !important;
+  --color-token-input-validation-info-background: var(--dream-accent-soft) !important;
+  --color-token-checkbox-background: var(--dream-menu-surface) !important;
+  --color-token-border: var(--dream-line-soft) !important;
+  --color-token-border-default: var(--dream-line-soft) !important;
+  --color-token-border-light: color-mix(in oklab, var(--dream-line-soft) 72%, transparent) !important;
+  --color-token-border-heavy: var(--dream-line) !important;
+  --color-token-menu-border: var(--dream-line-soft) !important;
+  --color-token-input-border: var(--dream-line) !important;
+  --color-token-button-border: var(--dream-line-soft) !important;
+  --color-token-checkbox-border: var(--dream-line-soft) !important;
+  --color-token-radio-inactive-border: var(--dream-line) !important;
+  --color-token-terminal-border: var(--dream-line-soft) !important;
+  --color-token-scrollbar-slider-background: var(--dream-line-soft) !important;
+  --color-token-scrollbar-slider-hover-background: var(--dream-line) !important;
+  --color-token-scrollbar-slider-active-background: var(--dream-line) !important;
+  --color-token-list-hover-background: var(--dream-accent-soft) !important;
+  --color-token-toolbar-hover-background: var(--dream-accent-soft) !important;
+  --color-token-button-secondary-hover-background: var(--dream-accent-soft) !important;
+  --color-token-list-active-selection-background: var(--dream-accent-soft) !important;
+  --color-token-badge-background: var(--dream-accent-soft) !important;
 }
 
 :root.codex-dream-skin.dream-theme-dark {
@@ -35,7 +117,7 @@
   --dream-surface-raised: color-mix(in oklab, oklch(0.23 0.012 245) 95%, var(--dream-accent));
   --dream-sidebar: color-mix(in oklab, oklch(0.145 0.014 245) 94%, var(--dream-accent));
   --dream-text: oklch(0.93 0.008 245);
-  --dream-text-muted: oklch(0.7 0.012 245);
+  --dream-text-muted: oklch(0.78 0.012 245);
   --dream-line: color-mix(in oklab, oklch(0.42 0.018 245) 76%, var(--dream-accent));
   --dream-line-soft: color-mix(in oklab, transparent 78%, var(--dream-accent));
   --dream-accent-soft: color-mix(in oklab, var(--dream-accent) 18%, var(--dream-surface));
@@ -46,13 +128,17 @@
   --dream-immersive-edge: color-mix(in oklab, var(--dream-surface) 43%, transparent);
   --dream-immersive-mid: color-mix(in oklab, var(--dream-surface) 27%, transparent);
   --dream-immersive-far: color-mix(in oklab, var(--dream-surface) 16%, transparent);
-  --dream-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 48%, transparent);
+  --dream-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 66%, transparent);
   --dream-task-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 70%, transparent);
-  --dream-immersive-composer: color-mix(in oklab, var(--dream-surface-raised) 88%, var(--dream-accent) 5%);
+  --dream-immersive-composer: color-mix(in oklab, var(--dream-surface-raised) 94%, var(--dream-accent) 6%);
   --dream-immersive-line: color-mix(in oklab, var(--dream-line) 82%, transparent);
   --dream-task-immersive-edge: color-mix(in oklab, var(--dream-surface) 82%, transparent);
   --dream-task-immersive-mid: color-mix(in oklab, var(--dream-surface) 74%, transparent);
   --dream-task-immersive-far: color-mix(in oklab, var(--dream-surface) 60%, transparent);
+  --dream-menu-surface: color-mix(in oklab, var(--dream-surface-raised) 84%, transparent);
+  --dream-menu-shadow: 0 20px 48px color-mix(in oklab, var(--dream-canvas) 68%, transparent);
+  --dream-secondary-panel: color-mix(in oklab, var(--dream-surface) 76%, transparent);
+  --dream-summary-panel: color-mix(in oklab, var(--dream-surface-raised) 84%, transparent);
 }
 
 html.codex-dream-skin body {
@@ -71,6 +157,100 @@ html.codex-dream-skin aside.app-shell-left-panel {
 
 html.codex-dream-skin aside.app-shell-left-panel nav {
   background: transparent !important;
+}
+
+/* Keep the native sidebar scrollbar and resize affordance in separate lanes.
+   Codex centers its 16px resize target over the panel edge by default, which
+   otherwise covers the final 8px of the scroll track. */
+html.codex-dream-skin aside.app-shell-left-panel .vertical-scroll-fade-mask {
+  scrollbar-color: color-mix(in oklab, var(--dream-accent) 42%, var(--dream-text-muted)) transparent;
+  scrollbar-width: thin;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel .vertical-scroll-fade-mask::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel .vertical-scroll-fade-mask::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel .vertical-scroll-fade-mask::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dream-accent) 42%, var(--dream-text-muted));
+  background-clip: padding-box;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel > [class~="cursor-col-resize"] {
+  right: -8px !important;
+  width: 8px !important;
+  transform: none !important;
+  translate: none !important;
+  background: transparent !important;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel > [class~="cursor-col-resize"]::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: 1px;
+  background: var(--dream-line-soft);
+  opacity: .65;
+  transition: background-color 160ms ease, opacity 160ms ease;
+}
+
+html.codex-dream-skin aside.app-shell-left-panel > [class~="cursor-col-resize"]:is(:hover, :active)::after {
+  background: var(--dream-accent);
+  opacity: .9;
+}
+
+/* Mirror the lane separation at the conversation/right-workspace boundary.
+   The workspace handle is a child of its right-hand aside, so keeping it at
+   left: 0 places the complete hit target beyond the thread scroll track. */
+html.codex-dream-skin .thread-scroll-container {
+  scrollbar-color: color-mix(in oklab, var(--dream-accent) 42%, var(--dream-text-muted)) transparent;
+  scrollbar-width: thin;
+}
+
+html.codex-dream-skin .thread-scroll-container::-webkit-scrollbar {
+  width: 8px;
+}
+
+html.codex-dream-skin .thread-scroll-container::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+html.codex-dream-skin .thread-scroll-container::-webkit-scrollbar-thumb {
+  border: 2px solid transparent;
+  border-radius: 8px;
+  background: color-mix(in oklab, var(--dream-accent) 42%, var(--dream-text-muted));
+  background-clip: padding-box;
+}
+
+html.codex-dream-skin main.main-surface aside > [class~="cursor-col-resize"][class~="left-0"] {
+  left: 0 !important;
+  width: 8px !important;
+  transform: none !important;
+  translate: none !important;
+  background: transparent !important;
+}
+
+html.codex-dream-skin main.main-surface aside > [class~="cursor-col-resize"][class~="left-0"]::after {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 50%;
+  width: 1px;
+  background: var(--dream-line-soft);
+  opacity: .65;
+  transition: background-color 160ms ease, opacity 160ms ease;
+}
+
+html.codex-dream-skin main.main-surface aside > [class~="cursor-col-resize"][class~="left-0"]:is(:hover, :active)::after {
+  background: var(--dream-accent);
+  opacity: .9;
 }
 
 html.codex-dream-skin aside.app-shell-left-panel button {
@@ -113,7 +293,20 @@ html.codex-dream-skin main.main-surface > header.app-header-tint {
 }
 
 /* Wide art also reaches the native application menu, which sits outside the
-   main surface and needs its own dark-theme legibility layer. */
+   main surface and needs its own appearance-matched legibility layer. */
+html.codex-dream-skin.dream-theme-light [class~="group/application-menu-top-bar"] {
+  color: var(--dream-text) !important;
+  background: color-mix(in oklab, var(--dream-sidebar) 94%, transparent) !important;
+  border-bottom: 1px solid var(--dream-line-soft) !important;
+  box-shadow: 0 1px 12px color-mix(in oklab, var(--dream-canvas) 58%, transparent) !important;
+  backdrop-filter: blur(16px) saturate(.9) !important;
+}
+
+html.codex-dream-skin.dream-theme-light [class~="group/application-menu-top-bar"] button,
+html.codex-dream-skin.dream-theme-light [class~="group/application-menu-top-bar"] svg {
+  color: var(--dream-text) !important;
+}
+
 html.codex-dream-skin.dream-theme-dark [class~="group/application-menu-top-bar"] {
   color: var(--dream-text) !important;
   background: color-mix(in oklab, var(--dream-sidebar) 90%, transparent) !important;
@@ -135,6 +328,69 @@ html.codex-dream-skin.dream-theme-dark [class~="group/application-menu-top-bar"]
 
 html.codex-dream-skin [role="main"] {
   color: var(--dream-text);
+}
+
+/* Portaled dropdowns and nested menus live outside the route surface. Theme
+   the semantic popup itself without making functional cards or dialogs glassy. */
+html.codex-dream-skin :is([role="menu"], [role="listbox"]) {
+  color: var(--dream-text) !important;
+  background: var(--dream-menu-surface) !important;
+  border-color: var(--dream-immersive-line) !important;
+  box-shadow: var(--dream-menu-shadow), inset 0 0 0 1px var(--dream-immersive-line) !important;
+  backdrop-filter: blur(18px) saturate(1.1) !important;
+}
+
+html.codex-dream-skin :is([role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]) {
+  color: var(--dream-text-muted) !important;
+}
+
+html.codex-dream-skin :is([role="menuitem"], [role="menuitemradio"], [role="menuitemcheckbox"], [role="option"]):is(:hover, :focus, [data-highlighted], [data-state="checked"]) {
+  color: var(--dream-text) !important;
+  background: var(--dream-accent-soft) !important;
+}
+
+html.codex-dream-skin :is([role="separator"], [data-radix-menu-separator], [data-radix-select-separator]) {
+  background: var(--dream-immersive-line) !important;
+}
+
+/* Persistent task drawers and the environment summary are not ARIA menus.
+   The renderer marks their stable structure so one glass layer can replace
+   the nested opaque native surfaces without affecting normal route cards. */
+html.codex-dream-skin .dream-secondary-drawer {
+  color: var(--dream-text) !important;
+  background: var(--dream-secondary-panel) !important;
+  border-color: var(--dream-immersive-line) !important;
+  box-shadow: -14px 0 34px color-mix(in oklab, var(--dream-canvas) 24%, transparent) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+  border-left-color: transparent !important;
+}
+
+html.codex-dream-skin .dream-secondary-drawer [class~="bg-token-main-surface-primary"] {
+  background: transparent !important;
+}
+
+html.codex-dream-skin header[class~="sticky"][class~="bg-token-dropdown-background"],
+html.codex-dream-skin .dream-attachment-panel [class~="bg-token-dropdown-background/95"] {
+  color: var(--dream-text-muted) !important;
+  background: color-mix(in oklab, var(--dream-surface-raised) 88%, var(--dream-accent) 12%) !important;
+  border-color: var(--dream-line-soft) !important;
+  backdrop-filter: blur(14px) saturate(1.05) !important;
+}
+
+html.codex-dream-skin .dream-summary-panel {
+  color: var(--dream-text) !important;
+  background: var(--dream-summary-panel) !important;
+  border: 1px solid var(--dream-immersive-line) !important;
+  box-shadow: var(--dream-menu-shadow) !important;
+  backdrop-filter: blur(18px) saturate(1.08) !important;
+}
+
+html.codex-dream-skin .dream-attachment-panel {
+  color: var(--dream-text) !important;
+  background: var(--dream-menu-surface) !important;
+  border-color: var(--dream-immersive-line) !important;
+  box-shadow: var(--dream-menu-shadow) !important;
+  backdrop-filter: blur(18px) saturate(1.1) !important;
 }
 
 /* Task routes use the art as a quiet atmospheric layer. Wide banners are shown
@@ -379,6 +635,28 @@ html.codex-dream-skin .ProseMirror {
   caret-color: var(--dream-accent) !important;
 }
 
+html.codex-dream-skin .dream-home-utility,
+html.codex-dream-skin .dream-home-utility button,
+html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]) {
+  color: var(--dream-text-muted) !important;
+}
+
+html.codex-dream-skin .dream-home-utility button *,
+html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]) * {
+  color: currentColor !important;
+}
+
+html.codex-dream-skin .dream-home-utility button:hover,
+html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]):hover {
+  color: var(--dream-text) !important;
+  background: var(--dream-accent-soft) !important;
+}
+
+html.codex-dream-skin .composer-surface-chrome p.placeholder::after {
+  color: var(--dream-text-muted) !important;
+  opacity: 1 !important;
+}
+
 html.codex-dream-skin button[class~="bg-token-foreground"] {
   color: var(--dream-accent-ink) !important;
   background: var(--dream-accent) !important;
@@ -494,6 +772,11 @@ html.codex-dream-skin.dream-art-wide main.main-surface.dream-home-shell
   backdrop-filter: blur(8px) saturate(1.04) !important;
 }
 
+html.codex-dream-skin.dream-theme-light.dream-art-wide main.main-surface.dream-home-shell
+  .dream-home .group\/home-suggestions button {
+  background: color-mix(in oklab, var(--dream-surface-raised) 90%, transparent) !important;
+}
+
 /* The composer owns exactly one solid readability surface. Native bottom
    gradients are cleared below so the control never appears double stacked. */
 html.codex-dream-skin.dream-art-wide .composer-surface-chrome {
@@ -512,6 +795,12 @@ html.codex-dream-skin.dream-art-wide .composer-surface-chrome::before {
 /* Current Codex builds render the home project picker in a hashed utility bar.
    Merge it with the composer so the bottom control reads as one surface. */
 html.codex-dream-skin .dream-home-utility {
+  /* Native inset changes between an empty new task and a populated draft.
+     The renderer measures both edges before setting these values. */
+  margin-inline-start: var(--dream-home-utility-margin-start) !important;
+  margin-inline-end: var(--dream-home-utility-margin-end) !important;
+  padding-inline-start: var(--dream-home-utility-padding-start) !important;
+  padding-inline-end: var(--dream-home-utility-padding-end) !important;
   border: 1px solid var(--dream-line) !important;
   border-bottom: 0 !important;
   border-radius: 18px 18px 0 0 !important;
@@ -563,6 +852,299 @@ html.codex-dream-skin.dream-art-wide main.main-surface .app-shell-main-content-t
 html.codex-dream-skin.dream-art-wide main.main-surface
   .thread-scroll-container .bg-gradient-to-t.from-token-main-surface-primary {
   background: transparent !important;
+}
+
+/* Functional EVA telemetry -------------------------------------------------
+   These compact, non-interactive modules borrow Rainmeter's desktop-widget
+   hierarchy. They expose real renderer state while leaving native controls
+   and hit targets untouched. */
+html.codex-dream-skin .dream-magi-module,
+html.codex-dream-skin .dream-composer-status,
+html.codex-dream-skin .dream-task-status-row::before,
+html.codex-dream-skin .dream-task-status-row::after,
+html.codex-dream-skin .dream-operation-panel::before {
+  pointer-events: none !important;
+  user-select: none !important;
+}
+
+html.codex-dream-skin .dream-magi-module {
+  flex: none;
+  padding: 12px 14px 11px;
+  color: var(--dream-text);
+  border-bottom: 1px solid var(--dream-line);
+  background:
+    linear-gradient(115deg, color-mix(in oklab, var(--dream-accent) 9%, transparent), transparent 42%),
+    color-mix(in oklab, var(--dream-surface-raised) 72%, transparent);
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+}
+
+html.codex-dream-skin .dream-magi-title,
+html.codex-dream-skin .dream-magi-meter > span {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  color: var(--dream-text-muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.2;
+  text-transform: uppercase;
+}
+
+html.codex-dream-skin .dream-magi-title strong {
+  color: var(--dream-accent);
+  font-size: 12px;
+  letter-spacing: .18em;
+}
+
+html.codex-dream-skin .dream-magi-cores {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+html.codex-dream-skin .dream-magi-cores > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 7px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 6px;
+  padding: 7px 6px 6px;
+  border: 1px solid color-mix(in oklab, var(--dream-line) 78%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--dream-canvas) 34%, transparent);
+}
+
+html.codex-dream-skin .dream-magi-cores > span > i {
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dream-text-muted);
+  box-shadow: 0 0 6px currentColor;
+}
+
+html.codex-dream-skin .dream-magi-cores b,
+html.codex-dream-skin .dream-magi-cores em {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-style: normal;
+  line-height: 1.05;
+}
+
+html.codex-dream-skin .dream-magi-cores b {
+  color: var(--dream-text-muted);
+  font-size: 8px;
+  letter-spacing: .02em;
+}
+
+html.codex-dream-skin .dream-magi-cores em {
+  margin-top: 3px;
+  color: var(--dream-text);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+html.codex-dream-skin .dream-magi-cores > span[data-state="ok"] > i {
+  color: #62e39a;
+  background: currentColor;
+}
+
+html.codex-dream-skin .dream-magi-cores > span[data-state="warn"] > i,
+html.codex-dream-skin .dream-magi-cores > span[data-state="unknown"] > i {
+  color: #efbe55;
+  background: currentColor;
+}
+
+html.codex-dream-skin .dream-magi-cores > span[data-state="alert"] > i {
+  color: #ff6b6b;
+  background: currentColor;
+}
+
+html.codex-dream-skin .dream-magi-meters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 11px;
+}
+
+html.codex-dream-skin .dream-magi-meter {
+  min-width: 0;
+}
+
+html.codex-dream-skin .dream-magi-meter strong {
+  color: var(--dream-text);
+  font-size: 14px;
+  letter-spacing: .02em;
+}
+
+html.codex-dream-skin .dream-magi-meter > em {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--dream-text-muted);
+  font-size: 8px;
+  font-style: normal;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+html.codex-dream-skin .dream-magi-meter > i {
+  position: relative;
+  display: block;
+  height: 5px;
+  margin-top: 6px;
+  overflow: hidden;
+  border-radius: 0;
+  background: color-mix(in oklab, var(--dream-text-muted) 20%, transparent);
+}
+
+html.codex-dream-skin .dream-magi-meter > i::after,
+html.codex-dream-skin .dream-magi-meter > i > u {
+  content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
+  display: block;
+  background: var(--dream-accent);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--dream-accent) 72%, transparent);
+  text-decoration: none;
+}
+
+html.codex-dream-skin .dream-magi-meter--usage > i::after {
+  width: var(--dream-usage-fill, 0%);
+}
+
+html.codex-dream-skin .dream-magi-meter--context > i > u {
+  width: var(--dream-context-fill, 0%);
+}
+
+html.codex-dream-skin .composer-surface-chrome {
+  position: relative;
+}
+
+html.codex-dream-skin .dream-composer-status {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 50%;
+  inset-block-end: 11px;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  max-width: 44%;
+  transform: translateX(-50%);
+  color: var(--dream-text-muted);
+  font: 750 9px/1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .1em;
+  white-space: nowrap;
+}
+
+html.codex-dream-skin .dream-composer-status span + span::before {
+  content: "/";
+  margin-inline-end: 7px;
+  color: color-mix(in oklab, var(--dream-text-muted) 48%, transparent);
+}
+
+html.codex-dream-skin .dream-composer-status span:last-child {
+  color: var(--dream-accent);
+}
+
+html.codex-dream-skin .dream-composer-status[data-state="hold"] span:last-child {
+  color: #efbe55;
+}
+
+html.codex-dream-skin .dream-composer-status[data-state="run"] span:last-child {
+  animation: dream-status-pulse 1.35s ease-in-out infinite;
+}
+
+html.codex-dream-skin .dream-task-status-row {
+  position: relative !important;
+  padding-inline-end: 104px !important;
+}
+
+html.codex-dream-skin .dream-task-status-row::before {
+  content: "";
+  position: absolute;
+  inset-block: 6px;
+  inset-inline-start: 2px;
+  width: 2px;
+  background: var(--dream-accent);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--dream-accent) 70%, transparent);
+}
+
+html.codex-dream-skin .dream-task-status-row::after {
+  content: "SYNC 5/5";
+  position: absolute;
+  inset-inline-end: 34px;
+  inset-block-start: 50%;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  min-width: 59px;
+  padding: 4px 6px 3px;
+  color: var(--dream-accent);
+  border: 1px solid color-mix(in oklab, var(--dream-accent) 42%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--dream-canvas) 48%, transparent);
+  font: 800 10px/1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .04em;
+  text-align: center;
+}
+
+html.codex-dream-skin .dream-task-status-row[data-dream-task-state="run"]::after {
+  content: "SYNC 3/5";
+  animation: dream-status-pulse 1.35s ease-in-out infinite;
+}
+
+html.codex-dream-skin .dream-task-status-row[data-dream-task-state="hold"]::after {
+  content: "SYNC 4/5";
+  color: #efbe55;
+}
+
+/* Pin/archive actions are mounted only while the native row is active. Move
+   telemetry into a dedicated lane instead of competing for their hit area. */
+html.codex-dream-skin .dream-task-status-row:is(:hover, :focus-within) {
+  padding-inline-end: 166px !important;
+}
+
+html.codex-dream-skin .dream-task-status-row:is(:hover, :focus-within)::after {
+  inset-inline-end: 92px;
+}
+
+html.codex-dream-skin .dream-operation-panel {
+  position: relative;
+}
+
+html.codex-dream-skin .dream-operation-panel::before {
+  content: attr(data-dream-operation);
+  display: block;
+  box-sizing: border-box;
+  min-height: 20px;
+  padding: 6px 12px 5px;
+  color: var(--dream-accent);
+  border-bottom: 1px solid var(--dream-line);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 17px, color-mix(in oklab, var(--dream-accent) 14%, transparent) 17px 18px),
+    color-mix(in oklab, var(--dream-surface-raised) 68%, transparent);
+  font: 800 9px/1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .15em;
+  text-align: end;
+}
+
+@keyframes dream-status-pulse {
+  0%, 100% { opacity: .55; }
+  50% { opacity: 1; }
+}
+
+@media (max-width: 1200px) {
+  html.codex-dream-skin .dream-composer-status {
+    display: none;
+  }
 }
 
 @media (max-width: 1120px) {
@@ -638,5 +1220,10 @@ html.codex-dream-skin.dream-art-wide main.main-surface
   html.codex-dream-skin *::after {
     scroll-behavior: auto !important;
     transition-duration: .01ms !important;
+  }
+
+  html.codex-dream-skin .dream-composer-status[data-state="run"] span:last-child,
+  html.codex-dream-skin .dream-task-status-row[data-dream-task-state="run"]::after {
+    animation: none !important;
   }
 }

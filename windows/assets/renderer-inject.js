@@ -29,6 +29,19 @@
     "--dream-image-luma",
   ];
   const HOME_UTILITY_CLASS = "dream-home-utility";
+  const HOME_UTILITY_PROPERTIES = [
+    "--dream-home-utility-margin-start",
+    "--dream-home-utility-margin-end",
+    "--dream-home-utility-padding-start",
+    "--dream-home-utility-padding-end",
+  ];
+  const SECONDARY_DRAWER_CLASS = "dream-secondary-drawer";
+  const SUMMARY_PANEL_CLASS = "dream-summary-panel";
+  const ATTACHMENT_PANEL_CLASS = "dream-attachment-panel";
+  const MAGI_MODULE_ID = "codex-dream-magi-module";
+  const COMPOSER_STATUS_ID = "codex-dream-composer-status";
+  const TASK_ROW_CLASS = "dream-task-status-row";
+  const OPERATION_PANEL_CLASS = "dream-operation-panel";
   const installToken = {};
   let samplingNativeShell = false;
   let observer = null;
@@ -41,6 +54,14 @@
       return channel <= .04045 ? channel / 12.92 : ((channel + .055) / 1.055) ** 2.4;
     });
     return .2126 * linear[0] + .7152 * linear[1] + .0722 * linear[2];
+  };
+  const parseHexColor = (value) => {
+    const match = /^#([\da-f]{3}|[\da-f]{6})$/i.exec(value || "");
+    if (!match) return null;
+    const hex = match[1].length === 3
+      ? [...match[1]].map((character) => character + character).join("")
+      : match[1];
+    return [0, 2, 4].map((offset) => Number.parseInt(hex.slice(offset, offset + 2), 16));
   };
   const defaultProfile = {
     appearance: "dark",
@@ -81,6 +102,7 @@
       focusX: hasNumber(art.focusX) ? clamp(art.focusX) : null,
       focusY: hasNumber(art.focusY) ? clamp(art.focusY) : null,
       accent: safeAccent,
+      accentRgb: parseHexColor(safeAccent),
       initialAspect: Number.isFinite(metadataRatio) && metadataRatio > 0 ? metadataRatio : null,
     };
   };
@@ -282,7 +304,23 @@
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
     document.querySelectorAll(".dream-task").forEach((node) => node.classList.remove("dream-task"));
     document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
-    document.querySelectorAll(`.${HOME_UTILITY_CLASS}`).forEach((node) => node.classList.remove(HOME_UTILITY_CLASS));
+    document.querySelectorAll(`.${HOME_UTILITY_CLASS}`).forEach((node) => {
+      node.classList.remove(HOME_UTILITY_CLASS);
+      for (const property of HOME_UTILITY_PROPERTIES) node.style?.removeProperty?.(property);
+    });
+    document.querySelectorAll(`.${SECONDARY_DRAWER_CLASS}`).forEach((node) => node.classList.remove(SECONDARY_DRAWER_CLASS));
+    document.querySelectorAll(`.${SUMMARY_PANEL_CLASS}`).forEach((node) => node.classList.remove(SUMMARY_PANEL_CLASS));
+    document.querySelectorAll(`.${ATTACHMENT_PANEL_CLASS}`).forEach((node) => node.classList.remove(ATTACHMENT_PANEL_CLASS));
+    document.querySelectorAll(`.${TASK_ROW_CLASS}`).forEach((node) => {
+      node.classList.remove(TASK_ROW_CLASS);
+      delete node.dataset?.dreamTaskState;
+    });
+    document.querySelectorAll(`.${OPERATION_PANEL_CLASS}`).forEach((node) => {
+      node.classList.remove(OPERATION_PANEL_CLASS);
+      delete node.dataset?.dreamOperation;
+    });
+    document.getElementById(MAGI_MODULE_ID)?.remove();
+    document.getElementById(COMPOSER_STATUS_ID)?.remove();
     document.getElementById(STYLE_ID)?.remove();
     document.getElementById(CHROME_ID)?.remove();
   };
@@ -298,7 +336,9 @@
       ? profile.aspect >= 2.25 ? "banner" : "ambient"
       : config.taskMode;
     const accent = config.accent || `rgb(${profile.accent.join(" ")})`;
-    const accentInk = luminance(...profile.accent) > .42 ? "rgb(26 24 28)" : "rgb(250 248 251)";
+    const accentInk = luminance(...(config.accentRgb || profile.accent)) > .18
+      ? "rgb(26 24 28)"
+      : "rgb(250 248 251)";
     root.classList.toggle("dream-theme-light", appearance === "light");
     root.classList.toggle("dream-theme-dark", appearance === "dark");
     root.classList.toggle("dream-art-wide", profile.aspect >= 1.75);
@@ -321,6 +361,218 @@
     root.style.setProperty("--dream-image-luma", profile.luma.toFixed(3));
   };
 
+  const alignHomeUtility = (utility, composer) => {
+    const wasSampling = samplingNativeShell;
+    samplingNativeShell = true;
+    try {
+      utility.classList.remove(HOME_UTILITY_CLASS);
+      for (const property of HOME_UTILITY_PROPERTIES) utility.style?.removeProperty?.(property);
+      const utilityRect = utility.getBoundingClientRect?.();
+      const composerRect = composer?.getBoundingClientRect?.() || utilityRect;
+      const nativeStyle = getComputedStyle(utility);
+      if (!utilityRect || !composerRect) {
+        utility.classList.add(HOME_UTILITY_CLASS);
+        return;
+      }
+      const clampOffset = (value) => Math.max(-32, Math.min(32, Math.round(value * 10) / 10));
+      /* The hashed home utility is a centered w-full flex item. Inline margins
+         move each rendered edge by twice their value, so compensate half of
+         the native edge inset rather than applying the raw difference. */
+      const marginStart = clampOffset((composerRect.left - utilityRect.left) / 2);
+      const marginEnd = clampOffset((utilityRect.right - composerRect.right) / 2);
+      const paddingStart = Number.parseFloat(nativeStyle.paddingInlineStart || nativeStyle.paddingLeft) || 0;
+      const paddingEnd = Number.parseFloat(nativeStyle.paddingInlineEnd || nativeStyle.paddingRight) || 0;
+      utility.style.setProperty("--dream-home-utility-margin-start", `${marginStart}px`);
+      utility.style.setProperty("--dream-home-utility-margin-end", `${marginEnd}px`);
+      utility.style.setProperty("--dream-home-utility-padding-start", `${paddingStart + Math.max(0, -marginStart)}px`);
+      utility.style.setProperty("--dream-home-utility-padding-end", `${paddingEnd + Math.max(0, -marginEnd)}px`);
+      utility.classList.add(HOME_UTILITY_CLASS);
+    } finally {
+      observer?.takeRecords?.();
+      samplingNativeShell = wasSampling;
+    }
+  };
+
+  const setText = (element, value) => {
+    if (element && element.textContent !== value) element.textContent = value;
+  };
+
+  const setState = (element, value) => {
+    if (element && element.dataset.state !== value) element.dataset.state = value;
+  };
+
+  const isVisible = (element) => {
+    if (!element?.getBoundingClientRect) return false;
+    const rect = element.getBoundingClientRect();
+    return rect.width > 0 && rect.height > 0 && rect.bottom > 0 && rect.top < window.innerHeight;
+  };
+
+  const taskRuntimeState = () => {
+    const running = [...document.querySelectorAll('[class*="cadencedShimmer"], [class*="shimmerHighlight"]')]
+      .some(isVisible);
+    if (running) return "run";
+    const approvalButtons = [...document.querySelectorAll("button")]
+      .filter((button) => isVisible(button) && !button.closest?.(".composer-surface-chrome"));
+    if (approvalButtons.some((button) => /^(?:批准|同意|允许|运行|approve|allow)(?:\s|$)/i
+      .test((button.textContent || "").trim()))) return "hold";
+    return "ready";
+  };
+
+  const estimateContext = (route) => {
+    const text = (route?.innerText || route?.textContent || "")
+      .replace(/MAGI SYSTEM|MELCHIOR|BALTHASAR|CASPER|USAGE REMAINING|CONTEXT BUFFER/g, "");
+    const cjkCount = (text.match(/[\u3400-\u9fff\uf900-\ufaff]/g) || []).length;
+    const remaining = text.replace(/[\u3400-\u9fff\uf900-\ufaff]/g, "").replace(/\s+/g, " ");
+    const imageCount = route?.querySelectorAll?.("img")?.length || 0;
+    const tokens = Math.max(0, Math.round(cjkCount + remaining.length / 4 + imageCount * 1200));
+    const percent = Math.max(1, Math.min(99, Math.round(tokens / 128000 * 100)));
+    const compact = tokens >= 1000 ? `${(tokens / 1000).toFixed(tokens >= 10000 ? 0 : 1)}K` : String(tokens);
+    return { tokens, percent, compact };
+  };
+
+  const findUsage = () => {
+    const settingsRoots = [...document.querySelectorAll('[role="dialog"], [data-testid*="settings" i]')]
+      .filter((candidate) => /(?:用量|usage)/i.test(candidate.textContent || ""));
+    for (const candidate of settingsRoots) {
+      const text = candidate.textContent.replace(/\s+/g, " ");
+      const remaining = /(?:剩余|remaining)[^\d%]{0,24}(\d{1,3})\s*%/i.exec(text) ||
+        /(\d{1,3})\s*%[^\d%]{0,24}(?:剩余|remaining)/i.exec(text);
+      if (remaining) {
+        const percent = Math.max(0, Math.min(100, Number(remaining[1])));
+        return { label: `${percent}%`, percent, state: percent <= 15 ? "alert" : percent <= 30 ? "warn" : "ok" };
+      }
+      const credits = /(?:credits?|额度)[^\d]{0,16}([\d,.]+)/i.exec(text);
+      if (credits) return { label: credits[1], percent: 0, state: "ok" };
+    }
+    return { label: "CHECK", percent: 0, state: "unknown" };
+  };
+
+  const statusCell = (module, name) => module.querySelector?.(`[data-magi="${name}"]`);
+
+  const ensureMagiModule = (summaryPanel, route, composer, runtimeState) => {
+    let module = document.getElementById(MAGI_MODULE_ID);
+    if (!summaryPanel) {
+      module?.remove();
+      return;
+    }
+    if (!module) {
+      module = document.createElement("div");
+      module.id = MAGI_MODULE_ID;
+      module.className = "dream-magi-module";
+      module.setAttribute("aria-hidden", "true");
+      module.innerHTML = `
+        <div class="dream-magi-title"><strong>MAGI SYSTEM</strong><span>ACTIVE THEME LINK</span></div>
+        <div class="dream-magi-cores">
+          <span data-magi="melchior"><b>MELCHIOR 1</b><i></i><em>ONLINE</em></span>
+          <span data-magi="balthasar"><b>BALTHASAR 2</b><i></i><em>CHECK</em></span>
+          <span data-magi="casper"><b>CASPER 3</b><i></i><em>READY</em></span>
+        </div>
+        <div class="dream-magi-meters">
+          <span class="dream-magi-meter dream-magi-meter--usage dream-usage-meter"><span><b>USAGE REMAINING</b><strong>CHECK</strong></span><i></i></span>
+          <span class="dream-magi-meter dream-magi-meter--context dream-context-meter"><span><b>CONTEXT BUFFER · EST.</b><strong>0%</strong></span><i><u></u></i><em>0 TOKENS · 128K SCALE</em></span>
+        </div>`;
+    }
+    if (module.parentElement !== summaryPanel) {
+      if (typeof summaryPanel.prepend !== "function" || typeof module.querySelector !== "function") return;
+      summaryPanel.prepend(module);
+    }
+
+    const text = summaryPanel.textContent || "";
+    const changeMatch = /(?:变更|changes?)[^+\-\d]{0,16}\+\s*(\d+)[^\-\d]{0,12}-\s*(\d+)/i.exec(text);
+    const dirty = changeMatch ? Number(changeMatch[1]) + Number(changeMatch[2]) > 0 : null;
+    const melchior = statusCell(module, "melchior");
+    const balthasar = statusCell(module, "balthasar");
+    const casper = statusCell(module, "casper");
+    setState(melchior, "ok");
+    setState(balthasar, dirty === null ? "unknown" : dirty ? "warn" : "ok");
+    setText(balthasar?.querySelector?.("em"), dirty === null ? "CHECK" : dirty ? "DIRTY" : "CLEAN");
+    setState(casper, runtimeState === "hold" ? "warn" : "ok");
+    setText(casper?.querySelector?.("em"), runtimeState === "run" ? "RUN" : runtimeState === "hold" ? "HOLD" : "READY");
+
+    const usage = findUsage();
+    const usageMeter = module.querySelector(".dream-usage-meter");
+    setState(usageMeter, usage.state);
+    setText(usageMeter?.querySelector("strong"), usage.label);
+    usageMeter?.style?.setProperty("--dream-usage-fill", `${usage.percent}%`);
+
+    const context = estimateContext(route);
+    const contextMeter = module.querySelector(".dream-context-meter");
+    setState(contextMeter, context.percent >= 85 ? "alert" : context.percent >= 65 ? "warn" : "ok");
+    setText(contextMeter?.querySelector("strong"), `${context.percent}%`);
+    setText(contextMeter?.querySelector("em"), `${context.compact} TOKENS · 128K SCALE`);
+    contextMeter?.style?.setProperty("--dream-context-fill", `${context.percent}%`);
+  };
+
+  const ensureComposerStatus = (composer, runtimeState) => {
+    let status = document.getElementById(COMPOSER_STATUS_ID);
+    if (!composer) {
+      status?.remove();
+      return;
+    }
+    if (!status) {
+      status = document.createElement("div");
+      status.id = COMPOSER_STATUS_ID;
+      status.className = "dream-composer-status";
+      status.setAttribute("aria-hidden", "true");
+      status.innerHTML = "<span data-field=\"pilot\">PILOT</span><i></i><span data-field=\"environment\">LOCAL</span><i></i><span data-field=\"state\">READY</span>";
+    }
+    if (status.parentElement !== composer) {
+      if (typeof composer.appendChild !== "function" || typeof status.querySelector !== "function") return;
+      composer.appendChild(status);
+    }
+    const modelButton = [...(composer.querySelectorAll?.("button") || [])]
+      .find((button) => /(?:Sol|Codex|GPT)/i.test(button.textContent || ""));
+    const modelMatches = (modelButton?.textContent || "").match(/(?:GPT[-\s]?\d[\w.-]*|\d(?:\.\d+)+\s*(?:Sol|Codex(?:\s+Spark)?))/gi);
+    const pilot = modelMatches?.at?.(-1)?.replace(/\s+/g, " ").toUpperCase() || "PILOT";
+    setText(status.querySelector('[data-field="pilot"]'), pilot);
+    setText(status.querySelector('[data-field="environment"]'), document.body.textContent.includes("本地") ? "LOCAL" : "ENV");
+    setText(status.querySelector('[data-field="state"]'), runtimeState === "run" ? "RUN" : runtimeState === "hold" ? "HOLD" : "READY");
+    status.dataset.state = runtimeState;
+  };
+
+  const ensureTaskRows = (runtimeState) => {
+    const rows = new Set(document.querySelectorAll(
+      'aside.app-shell-left-panel [role="button"][aria-current="page"]',
+    ));
+    for (const candidate of document.querySelectorAll(`.${TASK_ROW_CLASS}`)) {
+      if (!rows.has(candidate)) {
+        candidate.classList.remove(TASK_ROW_CLASS);
+        delete candidate.dataset?.dreamTaskState;
+      }
+    }
+    for (const candidate of rows) {
+      candidate.classList.add(TASK_ROW_CLASS);
+      candidate.dataset.dreamTaskState = runtimeState;
+    }
+  };
+
+  const ensureOperationPanels = () => {
+    const panels = new Set();
+    const labels = [...document.querySelectorAll("body *")].filter((candidate) =>
+      candidate.children.length === 0 &&
+      /(?:已编辑\s*\d+\s*个文件|edited\s*\d+\s*files?)/i.test(candidate.textContent?.trim?.() || ""));
+    for (const label of labels) {
+      const count = Number(/\d+/.exec(label.textContent)?.[0] || 0);
+      let candidate = label.parentElement;
+      let panel = null;
+      for (let depth = 0; candidate && depth < 8; depth += 1, candidate = candidate.parentElement) {
+        const className = String(candidate.className || "");
+        const text = candidate.textContent || "";
+        if (/rounded-(?:2xl|3xl)/.test(className) && text.length > label.textContent.length + 20) panel = candidate;
+      }
+      if (!panel) continue;
+      panels.add(panel);
+      panel.classList.add(OPERATION_PANEL_CLASS);
+      panel.dataset.dreamOperation = `OP-${String(count).padStart(2, "0")} · ${count} FILE${count === 1 ? "" : "S"}`;
+    }
+    for (const candidate of document.querySelectorAll(`.${OPERATION_PANEL_CLASS}`)) {
+      if (!panels.has(candidate)) {
+        candidate.classList.remove(OPERATION_PANEL_CLASS);
+        delete candidate.dataset?.dreamOperation;
+      }
+    }
+  };
+
   const ensure = () => {
     if (window.__CODEX_DREAM_SKIN_DISABLED__) return;
     const root = document.documentElement;
@@ -328,7 +580,8 @@
 
     const shellMain = document.querySelector("main.main-surface");
     const shellSidebar = document.querySelector("aside.app-shell-left-panel");
-    if (!shellMain || !shellSidebar) {
+    const shellComposer = [...document.querySelectorAll(".composer-surface-chrome")].find(isVisible) || null;
+    if (!shellMain || (!shellSidebar && !shellComposer)) {
       clearSkinDom();
       return;
     }
@@ -354,10 +607,51 @@
     }
     const utilityBars = new Set(home ? home.querySelectorAll('[class*="_homeUtilityBar_"]') : []);
     for (const candidate of document.querySelectorAll(`.${HOME_UTILITY_CLASS}`)) {
-      if (!utilityBars.has(candidate)) candidate.classList.remove(HOME_UTILITY_CLASS);
+      if (!utilityBars.has(candidate)) {
+        candidate.classList.remove(HOME_UTILITY_CLASS);
+        for (const property of HOME_UTILITY_PROPERTIES) candidate.style?.removeProperty?.(property);
+      }
     }
-    for (const candidate of utilityBars) candidate.classList.add(HOME_UTILITY_CLASS);
+    const homeComposer = home?.querySelector?.(".composer-surface-chrome") || null;
+    for (const candidate of utilityBars) alignHomeUtility(candidate, homeComposer);
     shellMain.classList.toggle("dream-home-shell", Boolean(home));
+
+    const secondaryDrawers = new Set(document.querySelectorAll(
+      '[class~="absolute"][class~="top-0"][class~="bottom-0"][class~="left-0"]' +
+      '[class~="border-l"][class~="bg-token-main-surface-primary"]',
+    ));
+    for (const candidate of document.querySelectorAll(`.${SECONDARY_DRAWER_CLASS}`)) {
+      if (!secondaryDrawers.has(candidate)) candidate.classList.remove(SECONDARY_DRAWER_CLASS);
+    }
+    for (const candidate of secondaryDrawers) candidate.classList.add(SECONDARY_DRAWER_CLASS);
+
+    const summaryPanels = new Set([...document.querySelectorAll(
+      '[class~="rounded-3xl"][class~="bg-token-dropdown-background"]',
+    )].filter((candidate) => candidate.querySelector('[class~="group/summary-panel-item"]')));
+    for (const candidate of document.querySelectorAll(`.${SUMMARY_PANEL_CLASS}`)) {
+      if (!summaryPanels.has(candidate)) candidate.classList.remove(SUMMARY_PANEL_CLASS);
+    }
+    for (const candidate of summaryPanels) candidate.classList.add(SUMMARY_PANEL_CLASS);
+
+    const attachmentPanels = new Set(document.querySelectorAll(
+      '[class~="max-h-[320px]"][class~="bg-token-dropdown-background/90"]',
+    ));
+    for (const candidate of document.querySelectorAll(`.${ATTACHMENT_PANEL_CLASS}`)) {
+      if (!attachmentPanels.has(candidate)) candidate.classList.remove(ATTACHMENT_PANEL_CLASS);
+    }
+    for (const candidate of attachmentPanels) candidate.classList.add(ATTACHMENT_PANEL_CLASS);
+
+    const taskRoute = [...document.querySelectorAll('[role="main"]')]
+      .filter((candidate) => candidate !== home && isVisible(candidate))
+      .sort((left, right) => (right.innerText || right.textContent || "").length -
+        (left.innerText || left.textContent || "").length)[0] ||
+      (isVisible(shellMain) ? shellMain : null);
+    const composer = shellComposer;
+    const runtimeState = taskRuntimeState();
+    ensureMagiModule([...summaryPanels][0] || null, taskRoute, composer, runtimeState);
+    ensureComposerStatus(composer, runtimeState);
+    ensureTaskRows(runtimeState);
+    ensureOperationPanels();
 
     let chrome = document.getElementById(CHROME_ID);
     if (!chrome || chrome.parentElement !== document.body) {
