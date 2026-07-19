@@ -885,16 +885,20 @@ html.codex-dream-skin .dream-magi-meter > span {
   justify-content: space-between;
   gap: 8px;
   color: var(--dream-text-muted);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 700;
   letter-spacing: .14em;
   line-height: 1.2;
   text-transform: uppercase;
 }
 
+html.codex-dream-skin .dream-magi-title > * {
+  white-space: nowrap;
+}
+
 html.codex-dream-skin .dream-magi-title strong {
   color: var(--dream-accent);
-  font-size: 12px;
+  font-size: 14px;
   letter-spacing: .18em;
 }
 
@@ -908,10 +912,10 @@ html.codex-dream-skin .dream-magi-cores {
 html.codex-dream-skin .dream-magi-cores > span {
   min-width: 0;
   display: grid;
-  grid-template-columns: 7px minmax(0, 1fr);
+  grid-template-columns: 6px minmax(0, 1fr);
   grid-template-rows: auto auto;
-  column-gap: 6px;
-  padding: 7px 6px 6px;
+  column-gap: 4px;
+  padding: 7px 4px 6px;
   border: 1px solid color-mix(in oklab, var(--dream-line) 78%, transparent);
   border-radius: 3px;
   background: color-mix(in oklab, var(--dream-canvas) 34%, transparent);
@@ -938,14 +942,14 @@ html.codex-dream-skin .dream-magi-cores em {
 
 html.codex-dream-skin .dream-magi-cores b {
   color: var(--dream-text-muted);
-  font-size: 8px;
-  letter-spacing: .02em;
+  font-size: 9px;
+  letter-spacing: 0;
 }
 
 html.codex-dream-skin .dream-magi-cores em {
   margin-top: 3px;
   color: var(--dream-text);
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 800;
 }
 
@@ -978,7 +982,7 @@ html.codex-dream-skin .dream-magi-meter {
 
 html.codex-dream-skin .dream-magi-meter strong {
   color: var(--dream-text);
-  font-size: 14px;
+  font-size: 16px;
   letter-spacing: .02em;
 }
 
@@ -987,7 +991,7 @@ html.codex-dream-skin .dream-magi-meter > em {
   margin-top: 3px;
   overflow: hidden;
   color: var(--dream-text-muted);
-  font-size: 8px;
+  font-size: 10px;
   font-style: normal;
   letter-spacing: .04em;
   line-height: 1;

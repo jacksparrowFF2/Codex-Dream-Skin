@@ -39,6 +39,7 @@
   const SUMMARY_PANEL_CLASS = "dream-summary-panel";
   const ATTACHMENT_PANEL_CLASS = "dream-attachment-panel";
   const MAGI_MODULE_ID = "codex-dream-magi-module";
+  const STATUS_CACHE_KEY = "codex-dream-official-status-v1";
   const COMPOSER_STATUS_ID = "codex-dream-composer-status";
   const TASK_ROW_CLASS = "dream-task-status-row";
   const OPERATION_PANEL_CLASS = "dream-operation-panel";
@@ -430,7 +431,79 @@
     return { tokens, percent, compact };
   };
 
-  const findUsage = () => {
+  const clampPercent = (value) => Math.max(0, Math.min(100, Number(value)));
+
+  const currentConversationId = () => {
+    const counts = new Map();
+    document.querySelectorAll("[data-response-annotation-conversation]").forEach((element) => {
+      if (!isVisible(element)) return;
+      const value = element.getAttribute("data-response-annotation-conversation") || "";
+      if (!/^[0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12}$/i.test(value)) return;
+      counts.set(value, (counts.get(value) || 0) + 1);
+    });
+    return [...counts].sort((left, right) => right[1] - left[1])[0]?.[0] || null;
+  };
+
+  const parseConversationStatusText = (text) => {
+    const normalized = String(text || "").replace(/\s+/g, " ").trim();
+    const session = /会话\s*[:：]\s*([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})/i.exec(normalized);
+    const context = /背景信息\s*[:：]\s*剩余\s*(\d{1,3})\s*%[\s\S]{0,80}?已使用\s*([\d,]+)\s*\/\s*(?:共\s*)?([\d,.]+\s*[KMG]?)/i.exec(normalized);
+    const quota = /7\s*天限额\s*[:：][\s\S]{0,220}?剩余\s*(\d{1,3})\s*%[\s\S]{0,80}?重置时间\s*[:：]\s*([^）)\n]{1,40})/i.exec(normalized);
+    if (!session || (!context && !quota)) return null;
+    return {
+      sessionId: session[1],
+      contextRemaining: context ? clampPercent(context[1]) : null,
+      contextUsed: context?.[2] || "",
+      contextTotal: context?.[3]?.replace(/\s+/g, "") || "",
+      quotaRemaining: quota ? clampPercent(quota[1]) : null,
+      quotaReset: quota?.[2]?.trim() || "",
+      capturedAt: Date.now(),
+    };
+  };
+
+  const writeStatusCache = (status) => {
+    try { window.sessionStorage?.setItem(STATUS_CACHE_KEY, JSON.stringify(status)); } catch (_) { /* best effort */ }
+  };
+
+  const readStatusCache = () => {
+    try {
+      const parsed = JSON.parse(window.sessionStorage?.getItem(STATUS_CACHE_KEY) || "null");
+      if (!parsed || Date.now() - Number(parsed.capturedAt) > 24 * 60 * 60 * 1000) return null;
+      return parsed;
+    } catch (_) { return null; }
+  };
+
+  const findConversationStatus = () => {
+    const headings = [...document.querySelectorAll("body *")]
+      .filter((element) => isVisible(element) && (element.textContent || "").trim() === "状态");
+    for (const heading of headings) {
+      let candidate = heading.parentElement;
+      for (let depth = 0; candidate && depth < 7; depth += 1, candidate = candidate.parentElement) {
+        const text = candidate.innerText || candidate.textContent || "";
+        if (!/会话\s*[:：]\s*[0-9a-f-]{36}/i.test(text) || !/背景信息\s*[:：]/.test(text) || !/7\s*天限额\s*[:：]/.test(text)) continue;
+        const hasClose = [...candidate.querySelectorAll("button, [role='button'], span")]
+          .some((element) => (element.textContent || "").trim() === "关闭");
+        if (!hasClose) continue;
+        const parsed = parseConversationStatusText(text);
+        if (parsed) {
+          writeStatusCache(parsed);
+          return { ...parsed, source: "live" };
+        }
+      }
+    }
+    const cached = readStatusCache();
+    return cached ? { ...cached, source: "cached" } : null;
+  };
+
+  const findUsage = (officialStatus) => {
+    if (officialStatus?.quotaRemaining !== null && officialStatus?.quotaRemaining !== undefined) {
+      const percent = clampPercent(officialStatus.quotaRemaining);
+      return {
+        label: `${percent}%`, percent,
+        state: percent <= 10 ? "alert" : percent <= 25 ? "warn" : "ok",
+        meta: `${officialStatus.source === "cached" ? "LAST · " : ""}7D LIMIT${officialStatus.quotaReset ? ` · RESET ${officialStatus.quotaReset}` : ""}`,
+      };
+    }
     const settingsRoots = [...document.querySelectorAll('[role="dialog"], [data-testid*="settings" i]')]
       .filter((candidate) => /(?:用量|usage)/i.test(candidate.textContent || ""));
     for (const candidate of settingsRoots) {
@@ -438,19 +511,23 @@
       const remaining = /(?:剩余|remaining)[^\d%]{0,24}(\d{1,3})\s*%/i.exec(text) ||
         /(\d{1,3})\s*%[^\d%]{0,24}(?:剩余|remaining)/i.exec(text);
       if (remaining) {
-        const percent = Math.max(0, Math.min(100, Number(remaining[1])));
-        return { label: `${percent}%`, percent, state: percent <= 15 ? "alert" : percent <= 30 ? "warn" : "ok" };
+        const percent = clampPercent(remaining[1]);
+        return { label: `${percent}%`, percent, state: percent <= 15 ? "alert" : percent <= 30 ? "warn" : "ok", meta: "SETTINGS USAGE" };
       }
       const credits = /(?:credits?|额度)[^\d]{0,16}([\d,.]+)/i.exec(text);
-      if (credits) return { label: credits[1], percent: 0, state: "ok" };
+      if (credits) return { label: credits[1], percent: 0, state: "ok", meta: "SETTINGS USAGE" };
     }
-    return { label: "CHECK", percent: 0, state: "unknown" };
+    return { label: "CHECK", percent: 0, state: "unknown", meta: "OPEN STATUS TO REFRESH" };
   };
 
   const statusCell = (module, name) => module.querySelector?.(`[data-magi="${name}"]`);
 
   const ensureMagiModule = (summaryPanel, route, composer, runtimeState) => {
     let module = document.getElementById(MAGI_MODULE_ID);
+    if (module && !module.querySelector?.(".dream-usage-meter > em")) {
+      module.remove();
+      module = null;
+    }
     if (!summaryPanel) {
       module?.remove();
       return;
@@ -468,8 +545,8 @@
           <span data-magi="casper"><b>CASPER 3</b><i></i><em>READY</em></span>
         </div>
         <div class="dream-magi-meters">
-          <span class="dream-magi-meter dream-magi-meter--usage dream-usage-meter"><span><b>USAGE REMAINING</b><strong>CHECK</strong></span><i></i></span>
-          <span class="dream-magi-meter dream-magi-meter--context dream-context-meter"><span><b>CONTEXT BUFFER · EST.</b><strong>0%</strong></span><i><u></u></i><em>0 TOKENS · 128K SCALE</em></span>
+          <span class="dream-magi-meter dream-magi-meter--usage dream-usage-meter"><span><b>7D USAGE REMAINING</b><strong>CHECK</strong></span><i></i><em>OPEN STATUS TO REFRESH</em></span>
+          <span class="dream-magi-meter dream-magi-meter--context dream-context-meter"><span><b data-field="context-label">CONTEXT BUFFER · EST.</b><strong>0%</strong></span><i><u></u></i><em>0 TOKENS · 128K SCALE</em></span>
         </div>`;
     }
     if (module.parentElement !== summaryPanel) {
@@ -489,18 +566,31 @@
     setState(casper, runtimeState === "hold" ? "warn" : "ok");
     setText(casper?.querySelector?.("em"), runtimeState === "run" ? "RUN" : runtimeState === "hold" ? "HOLD" : "READY");
 
-    const usage = findUsage();
+    const officialStatus = findConversationStatus();
+    const usage = findUsage(officialStatus);
     const usageMeter = module.querySelector(".dream-usage-meter");
     setState(usageMeter, usage.state);
     setText(usageMeter?.querySelector("strong"), usage.label);
+    setText(usageMeter?.querySelector("em"), usage.meta);
     usageMeter?.style?.setProperty("--dream-usage-fill", `${usage.percent}%`);
 
-    const context = estimateContext(route);
     const contextMeter = module.querySelector(".dream-context-meter");
-    setState(contextMeter, context.percent >= 85 ? "alert" : context.percent >= 65 ? "warn" : "ok");
-    setText(contextMeter?.querySelector("strong"), `${context.percent}%`);
-    setText(contextMeter?.querySelector("em"), `${context.compact} TOKENS · 128K SCALE`);
-    contextMeter?.style?.setProperty("--dream-context-fill", `${context.percent}%`);
+    const sameConversation = officialStatus?.sessionId && officialStatus.sessionId === currentConversationId();
+    if (sameConversation && officialStatus.contextRemaining !== null) {
+      const remaining = clampPercent(officialStatus.contextRemaining);
+      setState(contextMeter, remaining <= 10 ? "alert" : remaining <= 25 ? "warn" : "ok");
+      setText(contextMeter?.querySelector('[data-field="context-label"]') || contextMeter?.querySelector("b"), "CONTEXT REMAINING");
+      setText(contextMeter?.querySelector("strong"), `${remaining}%`);
+      setText(contextMeter?.querySelector("em"), `${officialStatus.source === "cached" ? "LAST · " : ""}USED ${officialStatus.contextUsed} · TOTAL ${officialStatus.contextTotal}`);
+      contextMeter?.style?.setProperty("--dream-context-fill", `${remaining}%`);
+    } else {
+      const context = estimateContext(route);
+      setState(contextMeter, context.percent >= 85 ? "alert" : context.percent >= 65 ? "warn" : "ok");
+      setText(contextMeter?.querySelector('[data-field="context-label"]') || contextMeter?.querySelector("b"), "CONTEXT BUFFER · EST.");
+      setText(contextMeter?.querySelector("strong"), `${context.percent}%`);
+      setText(contextMeter?.querySelector("em"), `${context.compact} TOKENS · 128K SCALE`);
+      contextMeter?.style?.setProperty("--dream-context-fill", `${context.percent}%`);
+    }
   };
 
   const ensureComposerStatus = (composer, runtimeState) => {

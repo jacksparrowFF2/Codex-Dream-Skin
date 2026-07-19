@@ -20,11 +20,125 @@ assert.doesNotMatch(
   "The skin must preserve Codex's native fixed header so the side-panel toggle remains reachable.",
 );
 
+assert.match(
+  css,
+  /\.dream-home-utility\s*\{[^}]*margin-inline-start:\s*var\(--dream-home-utility-margin-start\)\s*!important;[^}]*padding-inline-start:\s*var\(--dream-home-utility-padding-start\)\s*!important;/s,
+  "The home utility bar must use renderer-measured geometry instead of a fixed gutter correction.",
+);
+assert.match(
+  css,
+  /--color-token-primary:\s*var\(--dream-accent\)\s*!important;[\s\S]*--color-token-text-link-foreground:\s*var\(--dream-accent\)\s*!important;/,
+  "Native Codex accent tokens must follow the active character theme.",
+);
+assert.match(
+  css,
+  /header\[class~="sticky"\]\[class~="bg-token-dropdown-background"\],[\s\S]*\.dream-attachment-panel \[class~="bg-token-dropdown-background\/95"\][\s\S]*background:\s*color-mix\(in oklab, var\(--dream-surface-raised\) 88%, var\(--dream-accent\) 12%\)\s*!important;/,
+  "Secondary-drawer and attachment-section headers must use an adaptive theme surface.",
+);
+assert.match(
+  css,
+  /\.dream-home-utility button,\s*html\.codex-dream-skin \.composer-surface-chrome button:not\(\[class~="bg-token-foreground"\]\)\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;/s,
+  "Composer controls must not inherit low-opacity native foreground tokens.",
+);
+assert.match(
+  css,
+  /\.composer-surface-chrome p\.placeholder::after\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;[^}]*opacity:\s*1\s*!important;/s,
+  "Composer placeholder text must retain explicit readable contrast.",
+);
+assert.match(
+  css,
+  /--dream-immersive-edge:\s*color-mix\(in oklab, var\(--dream-surface\) 88%, transparent\)/,
+  "Light mode must use an opaque-enough home wash over dark detailed artwork.",
+);
+assert.match(
+  css,
+  /\.dream-theme-light \[class~="group\/application-menu-top-bar"\]\s*\{[^}]*background:\s*color-mix\(in oklab, var\(--dream-sidebar\) 94%, transparent\)/s,
+  "Light mode must keep the native application menu readable over wide artwork.",
+);
+assert.match(
+  css,
+  /:is\(\[role="menu"\], \[role="listbox"\]\)\s*\{[^}]*background:\s*var\(--dream-menu-surface\)\s*!important;[^}]*backdrop-filter:\s*blur\(18px\)/s,
+  "Semantic dropdowns and nested menus must use the themed glass surface.",
+);
+assert.match(
+  css,
+  /\[role="menuitemradio"\][^}]*\[data-state="checked"\][^}]*background:\s*var\(--dream-accent-soft\)/s,
+  "Popup selections must retain a theme-colored high-contrast state.",
+);
+assert.match(
+  css,
+  /\.dream-magi-module[\s\S]*\.dream-magi-meter--context[\s\S]*--dream-context-fill/,
+  "The environment panel must expose compact MAGI and estimated context telemetry.",
+);
+assert.match(
+  css,
+  /\.dream-task-status-row\[data-dream-task-state="run"\]::after\s*\{[^}]*content:\s*"SYNC 3\/5"/s,
+  "The active task row must expose its discrete synchronization state.",
+);
+assert.match(
+  css,
+  /\.dream-magi-title strong\s*\{[^}]*font-size:\s*14px;[\s\S]*\.dream-magi-meters\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);/s,
+  "MAGI telemetry must use a legible type scale and full-width meter rows.",
+);
+assert.match(css, /\.dream-magi-title > \*\s*\{[^}]*white-space:\s*nowrap;/s,
+  "Larger MAGI title text must remain on one line in the narrow summary panel.");
+assert.match(
+  css,
+  /\.dream-task-status-row::after\s*\{[^}]*inset-inline-end:\s*34px;[^}]*font:\s*800 10px\/1/s,
+  "The task status badge must remain clear of Codex's native trailing icon.",
+);
+assert.match(
+  css,
+  /\.dream-task-status-row:is\(:hover, :focus-within\)::after\s*\{[^}]*inset-inline-end:\s*92px;/s,
+  "The task status badge must yield to native pin and archive controls on hover or focus.",
+);
+assert.match(
+  css,
+  /aside\.app-shell-left-panel > \[class~="cursor-col-resize"\]\s*\{[^}]*right:\s*-8px\s*!important;[^}]*width:\s*8px\s*!important;[^}]*translate:\s*none\s*!important;/s,
+  "The sidebar resize target must sit outside the native scrollbar lane.",
+);
+assert.match(
+  css,
+  /main\.main-surface aside > \[class~="cursor-col-resize"\]\[class~="left-0"\]\s*\{[^}]*left:\s*0\s*!important;[^}]*width:\s*8px\s*!important;[^}]*translate:\s*none\s*!important;/s,
+  "The right workspace resize target must sit beyond the conversation scrollbar lane.",
+);
+assert.match(
+  css,
+  /\.thread-scroll-container\s*\{[^}]*scrollbar-width:\s*thin;/s,
+  "The conversation scrollbar must use an independent narrow track.",
+);
+assert.match(
+  css,
+  /\.dream-operation-panel::before\s*\{[^}]*content:\s*attr\(data-dream-operation\)/s,
+  "Edited-file cards must receive a non-interactive operation header.",
+);
+assert.match(template, /USAGE REMAINING/,
+  "The renderer must label account quota separately from context estimation.");
+assert.match(template, /CONTEXT BUFFER · EST\./,
+  "Context telemetry must be explicitly marked as an estimate.");
+assert.match(template, /codex-dream-official-status-v1/,
+  "Official conversation status readings must be cached after the native status surface closes.");
+assert.match(template, /data-response-annotation-conversation/,
+  "Cached context readings must be scoped to the currently rendered conversation.");
+assert.match(template, /\(element\.textContent \|\| ""\)\.trim\(\) === "状态"/,
+  "Status discovery must start from the native standalone status heading.");
+assert.match(template, /7\\s\*天限额[\s\S]*重置时间/,
+  "The native seven-day allowance and reset time must feed the account meter.");
+assert.match(template, /CONTEXT REMAINING/,
+  "Official background-information readings must replace estimates for the matching conversation.");
+assert.match(template, /dream-usage-meter > em/,
+  "A live upgrade must replace legacy MAGI markup that cannot display official quota metadata.");
+assert.match(template, /querySelectorAll\('\[role="dialog"\], \[data-testid\*="settings" i\]'\)/,
+  "Quota discovery must remain limited to visible official settings surfaces.");
+
 function createFixture({
   shellPresent,
+  sidebarPresent = true,
+  composerPresent = false,
   staleSkin = false,
   homePresent = false,
   utilityPresent = false,
+  secondaryPanelsPresent = false,
   shellAppearance = "dark",
   computedColorScheme = "",
   osAppearance = "light",
@@ -97,9 +211,36 @@ function createFixture({
   };
   const routeClasses = new Set();
   const utilityClasses = new Set();
-  const utilityNode = { classList: makeClassList(utilityClasses) };
+  const utilityStyles = new Map();
+  const utilityNode = {
+    classList: makeClassList(utilityClasses),
+    style: {
+      setProperty(key, value) { utilityStyles.set(key, value); },
+      removeProperty(key) { utilityStyles.delete(key); },
+    },
+    getBoundingClientRect() { return { left: 310, right: 990, width: 680 }; },
+  };
+  const composerNode = {
+    getBoundingClientRect() {
+      return { left: 290, right: 1010, top: 690, bottom: 790, width: 720, height: 100 };
+    },
+  };
+  const drawerClasses = new Set();
+  const summaryClasses = new Set();
+  const attachmentClasses = new Set();
+  const drawerNode = { classList: makeClassList(drawerClasses) };
+  const attachmentNode = { classList: makeClassList(attachmentClasses) };
+  const summaryNode = {
+    classList: makeClassList(summaryClasses),
+    querySelector(selector) {
+      return selector === '[class~="group/summary-panel-item"]' ? {} : null;
+    },
+  };
   const routeMain = {
     classList: makeClassList(routeClasses),
+    querySelector(selector) {
+      return selector === ".composer-surface-chrome" && utilityPresent ? composerNode : null;
+    },
     querySelectorAll(selector) {
       if (selector === '[class*="_homeUtilityBar_"]' && utilityPresent) return [utilityNode];
       return [];
@@ -150,7 +291,7 @@ function createFixture({
     getElementById(id) { return nodes.get(id) ?? null; },
     querySelector(selector) {
       if (selector === "main.main-surface") return hasShell ? shellMain : null;
-      if (selector === "aside.app-shell-left-panel") return hasShell ? {} : null;
+      if (selector === "aside.app-shell-left-panel") return hasShell && sidebarPresent ? {} : null;
       if (selector === '[role="main"]:has([data-testid="home-icon"])') {
         return hasShell && homePresent ? routeMain : null;
       }
@@ -158,9 +299,28 @@ function createFixture({
     },
     querySelectorAll(selector) {
       if (selector === '[role="main"]') return hasShell ? [routeMain] : [];
+      if (selector === ".composer-surface-chrome") return hasShell && composerPresent ? [composerNode] : [];
       if (selector === ".dream-task") return routeClasses.has("dream-task") ? [routeMain] : [];
       if (selector === ".dream-home-utility") {
         return utilityClasses.has("dream-home-utility") ? [utilityNode] : [];
+      }
+      if (selector === '[class~="absolute"][class~="top-0"][class~="bottom-0"][class~="left-0"][class~="border-l"][class~="bg-token-main-surface-primary"]') {
+        return secondaryPanelsPresent ? [drawerNode] : [];
+      }
+      if (selector === '[class~="rounded-3xl"][class~="bg-token-dropdown-background"]') {
+        return secondaryPanelsPresent ? [summaryNode] : [];
+      }
+      if (selector === ".dream-secondary-drawer") {
+        return drawerClasses.has("dream-secondary-drawer") ? [drawerNode] : [];
+      }
+      if (selector === ".dream-summary-panel") {
+        return summaryClasses.has("dream-summary-panel") ? [summaryNode] : [];
+      }
+      if (selector === '[class~="max-h-[320px]"][class~="bg-token-dropdown-background/90"]') {
+        return secondaryPanelsPresent ? [attachmentNode] : [];
+      }
+      if (selector === ".dream-attachment-panel") {
+        return attachmentClasses.has("dream-attachment-panel") ? [attachmentNode] : [];
       }
       if (!staleSkin) return [];
       if (selector === ".dream-home") return [staleHome];
@@ -170,6 +330,7 @@ function createFixture({
   };
   const context = {
     window: {
+      innerHeight: 820,
       matchMedia() { return { matches: osAppearance === "dark" }; },
     },
     document,
@@ -206,7 +367,12 @@ function createFixture({
     clearInterval: () => {},
     setTimeout: () => 2,
     clearTimeout: () => {},
-    getComputedStyle() { return { colorScheme: computedColorScheme }; },
+    getComputedStyle(element) {
+      if (element === utilityNode) {
+        return { paddingInlineStart: "8px", paddingInlineEnd: "8px" };
+      }
+      return { colorScheme: computedColorScheme };
+    },
   };
   if (analysisFixture) {
     context.Image = class {
@@ -225,6 +391,10 @@ function createFixture({
     revokedUrls,
     routeClasses,
     utilityClasses,
+    utilityStyles,
+    drawerClasses,
+    summaryClasses,
+    attachmentClasses,
     setShellPresent(value) { hasShell = value; },
   };
 }
@@ -241,6 +411,12 @@ assert.equal(main.rootClasses.has("dream-art-standard"), true);
 assert.equal(main.rootClasses.has("dream-task-ambient"), true);
 assert.equal(main.routeClasses.has("dream-task"), true);
 assert.equal(main.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
+
+const collapsedSidebar = createFixture({ shellPresent: true, sidebarPresent: false, composerPresent: true });
+const collapsedResult = vm.runInNewContext(payload, collapsedSidebar.context);
+assert.equal(collapsedResult.adaptive, true,
+  "A visible main surface and composer must keep the skin active while the sidebar is collapsed.");
+assert.equal(collapsedSidebar.rootClasses.has("codex-dream-skin"), true);
 assert.equal(main.rootClasses.has("codex-dream-skin"), false);
 assert.equal(main.rootClasses.has("dream-theme-dark"), false);
 assert.equal(main.nodes.has("codex-dream-skin-style"), false);
@@ -277,6 +453,7 @@ const configured = createFixture({
   shellPresent: true,
   homePresent: true,
   utilityPresent: true,
+  secondaryPanelsPresent: true,
 });
 const configuredPayload = buildPayload({
   appearance: "light",
@@ -292,11 +469,23 @@ assert.equal(configured.rootClasses.has("dream-safe-right"), true);
 assert.equal(configured.rootClasses.has("dream-task-off"), true);
 assert.equal(configured.rootStyles.get("--dream-art-position"), "15% 80%");
 assert.equal(configured.rootStyles.get("--dream-accent"), "#d45a70");
+assert.equal(configured.rootStyles.get("--dream-accent-ink"), "rgb(26 24 28)");
 assert.equal(configured.routeClasses.has("dream-home"), true);
 assert.equal(configured.routeClasses.has("dream-task"), false);
 assert.equal(configured.utilityClasses.has("dream-home-utility"), true);
+assert.equal(configured.utilityStyles.get("--dream-home-utility-margin-start"), "-10px");
+assert.equal(configured.utilityStyles.get("--dream-home-utility-margin-end"), "-10px");
+assert.equal(configured.utilityStyles.get("--dream-home-utility-padding-start"), "18px");
+assert.equal(configured.utilityStyles.get("--dream-home-utility-padding-end"), "18px");
+assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), true);
+assert.equal(configured.summaryClasses.has("dream-summary-panel"), true);
+assert.equal(configured.attachmentClasses.has("dream-attachment-panel"), true);
 assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
 assert.equal(configured.utilityClasses.has("dream-home-utility"), false);
+assert.equal(configured.utilityStyles.size, 0);
+assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), false);
+assert.equal(configured.summaryClasses.has("dream-summary-panel"), false);
+assert.equal(configured.attachmentClasses.has("dream-attachment-panel"), false);
 
 const analysisPixels = new Uint8ClampedArray(48 * 12 * 4);
 for (let index = 0; index < 48 * 12; index += 1) {
@@ -320,6 +509,10 @@ assert.equal(analyzed.rootClasses.has("dream-art-wide"), true);
 assert.equal(analyzed.rootClasses.has("dream-task-banner"), true);
 assert.equal(analyzed.rootClasses.has("dream-safe-left"), true);
 assert.notEqual(analyzed.rootStyles.get("--dream-accent"), "rgb(216 104 119)");
+
+const darkAccent = createFixture({ shellPresent: true });
+vm.runInNewContext(buildPayload({ palette: { accent: "#56317d" } }), darkAccent.context);
+assert.equal(darkAccent.rootStyles.get("--dream-accent-ink"), "rgb(250 248 251)");
 
 const standardArt = createFixture({
   shellPresent: true,
