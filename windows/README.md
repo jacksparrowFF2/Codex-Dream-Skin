@@ -6,6 +6,8 @@
 
 Codex Dream Skin 通过本机回环 CDP 给官方 Codex Windows 桌面应用加载外部主题。它保留原生侧栏、项目选择、任务内容和输入框，不修改 WindowsApps、`app.asar` 或应用签名。
 
+需要安装 EVA 角色预设、了解 MAGI 面板或排查当前定制界面时，请参阅 [`EVA Dream Skin 安装与使用手册`](./USER-GUIDE.zh-CN.md)。
+
 ## 运行要求
 
 - 从 Microsoft Store 安装且已注册到当前用户的官方 `OpenAI.Codex` 应用。

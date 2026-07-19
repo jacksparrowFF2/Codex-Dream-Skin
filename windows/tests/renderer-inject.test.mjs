@@ -50,6 +50,15 @@ assert.match(
   /--dream-immersive-edge:\s*color-mix\(in oklab, var\(--dream-surface\) 88%, transparent\)/,
   "Light mode must use an opaque-enough home wash over dark detailed artwork.",
 );
+assert.match(css,
+  /\.dream-theme-light\s*\{[\s\S]*--dream-task-immersive-edge:[^;]*82%[\s\S]*--dream-task-immersive-mid:[^;]*50%[\s\S]*--dream-task-immersive-far:[^;]*8%/,
+  "Light task mode must protect text while revealing the character side of the wallpaper.");
+assert.match(css,
+  /\.dream-theme-light\s*\{[\s\S]*--dream-immersive-composer:[^;]*96%[\s\S]*--dream-summary-panel:[^;]*92%/,
+  "Light mode must recover contrast through opaque local controls and summary panels.");
+assert.match(css,
+  /\.dream-theme-light\.dream-art-wide[\s\S]*--dream-task-immersive-mid\) 42%[\s\S]*--dream-task-immersive-far\) 72%/,
+  "Light task mode must end its pale readability veil before the character focus area.");
 assert.match(
   css,
   /\.dream-theme-light \[class~="group\/application-menu-top-bar"\]\s*\{[^}]*background:\s*color-mix\(in oklab, var\(--dream-sidebar\) 94%, transparent\)/s,
@@ -109,9 +118,27 @@ assert.match(
 );
 assert.match(
   css,
-  /\.dream-operation-panel::before\s*\{[^}]*content:\s*attr\(data-dream-operation\)/s,
-  "Edited-file cards must receive a non-interactive operation header.",
+  /\.dream-operation-panel::before\s*\{[^}]*content:\s*attr\(data-dream-operation\)[^}]*font:\s*800 12px\/1\.15/s,
+  "Edited-file cards must receive a legible non-interactive operation header.",
 );
+assert.match(css, /\.dream-art-fit-height[\s\S]*body\s*\{[^}]*background-size:\s*auto 100%\s*!important;/,
+  "Short wide windows must fit character wallpapers by height instead of cropping them.");
+assert.match(template, /viewportAspect > profile\.aspect \+ \.02/,
+  "Height-fit mode must respond to the actual wallpaper and viewport aspect ratios.");
+assert.match(template, /addEventListener\?\.\("resize", resizeHandler\)/,
+  "Responsive wallpaper fitting must update immediately on resize.");
+assert.match(template, /removeEventListener\?\.\("resize", state\.resizeHandler\)/,
+  "Responsive wallpaper fitting must remove its listener during cleanup.");
+assert.match(css, /\.dream-eva-thread-rail::after\s*\{[^}]*content:\s*attr\(data-dream-rail-phase\)[^}]*font:\s*800 11px\/1\.1/s,
+  "The native message rail must expose a readable EVA phase indicator.");
+assert.match(css, /\[data-dream-rail-state="current"\][\s\S]*width:\s*30px\s*!important;/,
+  "The active entry-plug marker must remain visually distinct.");
+assert.match(css, /\.dream-eva-record-panel::before,[\s\S]*font:\s*800 12px\/1\.15/s,
+  "Rail preview record labels must not use tiny display text.");
+assert.match(template, /OPERATION REPORT · FILES/,
+  "Edited-file telemetry must use the EVA operation-report vocabulary.");
+assert.match(template, /VISUAL RECORD · IMG-01[\s\S]*RENDER COMPLETE/,
+  "Image-bearing rail previews must expose visual-record status.");
 assert.match(template, /USAGE REMAINING/,
   "The renderer must label account quota separately from context estimation.");
 assert.match(template, /CONTEXT BUFFER · EST\./,
@@ -126,6 +153,10 @@ assert.match(template, /7\\s\*天限额[\s\S]*重置时间/,
   "The native seven-day allowance and reset time must feed the account meter.");
 assert.match(template, /CONTEXT REMAINING/,
   "Official background-information readings must replace estimates for the matching conversation.");
+assert.match(template, /__codexRoot[\s\S]*rate-limit-status[\s\S]*latestTokenUsageInfo/,
+  "MAGI telemetry must read Codex's automatically refreshed quota and current-thread token state.");
+assert.doesNotMatch(template, /sendMessageFromView|account\/rateLimits\/read|account\/usage\/read/,
+  "Automatic telemetry must remain read-only and must not send commands or duplicate native requests.");
 assert.match(template, /dream-usage-meter > em/,
   "A live upgrade must replace legacy MAGI markup that cannot display official quota metadata.");
 assert.match(template, /querySelectorAll\('\[role="dialog"\], \[data-testid\*="settings" i\]'\)/,

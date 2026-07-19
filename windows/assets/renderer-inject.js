@@ -8,6 +8,7 @@
     "dream-theme-dark",
     "dream-art-wide",
     "dream-art-standard",
+    "dream-art-fit-height",
     "dream-focus-left",
     "dream-focus-center",
     "dream-focus-right",
@@ -43,9 +44,15 @@
   const COMPOSER_STATUS_ID = "codex-dream-composer-status";
   const TASK_ROW_CLASS = "dream-task-status-row";
   const OPERATION_PANEL_CLASS = "dream-operation-panel";
+  const THREAD_RAIL_CLASS = "dream-eva-thread-rail";
+  const RAIL_PREVIEW_CLASS = "dream-eva-record-panel";
   const installToken = {};
   let samplingNativeShell = false;
   let observer = null;
+  let nativeQueryClient = null;
+  let nativeConversationManager = null;
+  let nativeTelemetryRoot = null;
+  let nativeTelemetryLastScan = 0;
   window.__CODEX_DREAM_SKIN_DISABLED__ = false;
 
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, Number(value)));
@@ -112,6 +119,7 @@
   if (previous?.observer) previous.observer.disconnect();
   if (previous?.timer) clearInterval(previous.timer);
   if (previous?.scheduler?.timeout) clearTimeout(previous.scheduler.timeout);
+  if (previous?.resizeHandler) window.removeEventListener?.("resize", previous.resizeHandler);
   if (previous?.artUrl) URL.revokeObjectURL(previous.artUrl);
   const artUrl = (() => {
     const comma = artDataUrl.indexOf(",");
@@ -320,6 +328,18 @@
       node.classList.remove(OPERATION_PANEL_CLASS);
       delete node.dataset?.dreamOperation;
     });
+    document.querySelectorAll(`.${THREAD_RAIL_CLASS}`).forEach((node) => {
+      node.classList.remove(THREAD_RAIL_CLASS);
+      delete node.dataset?.dreamRailPhase;
+      delete node.dataset?.dreamRailRuntime;
+      node.style?.removeProperty?.("--dream-rail-phase-y");
+      node.querySelectorAll?.("[data-dream-rail-state]").forEach((item) => delete item.dataset?.dreamRailState);
+    });
+    document.querySelectorAll(`.${RAIL_PREVIEW_CLASS}`).forEach((node) => {
+      node.classList.remove(RAIL_PREVIEW_CLASS);
+      delete node.dataset?.dreamRecord;
+      delete node.dataset?.dreamRecordStatus;
+    });
     document.getElementById(MAGI_MODULE_ID)?.remove();
     document.getElementById(COMPOSER_STATUS_ID)?.remove();
     document.getElementById(STYLE_ID)?.remove();
@@ -344,6 +364,11 @@
     root.classList.toggle("dream-theme-dark", appearance === "dark");
     root.classList.toggle("dream-art-wide", profile.aspect >= 1.75);
     root.classList.toggle("dream-art-standard", profile.aspect < 1.75);
+    const viewportWidth = Number(window.innerWidth || document.documentElement?.clientWidth || 0);
+    const viewportHeight = Number(window.innerHeight || document.documentElement?.clientHeight || 0);
+    const viewportAspect = viewportHeight > 0 ? viewportWidth / viewportHeight : 0;
+    root.classList.toggle("dream-art-fit-height",
+      profile.aspect >= 1.75 && viewportAspect > profile.aspect + .02);
     for (const value of ["left", "center", "right"]) {
       root.classList.toggle(`dream-focus-${value}`, focus === value);
     }
@@ -444,6 +469,103 @@
     return [...counts].sort((left, right) => right[1] - left[1])[0]?.[0] || null;
   };
 
+  const discoverNativeTelemetrySources = () => {
+    const root = window.__codexRoot?._internalRoot?.current || null;
+    if (root !== nativeTelemetryRoot && root?.alternate !== nativeTelemetryRoot &&
+        nativeTelemetryRoot?.alternate !== root) {
+      nativeTelemetryRoot = root;
+      nativeQueryClient = null;
+      nativeConversationManager = null;
+    }
+    if (!root || (nativeQueryClient && nativeConversationManager)) return;
+    const now = Date.now();
+    if (now - nativeTelemetryLastScan < 30000) return;
+    nativeTelemetryLastScan = now;
+    const consider = (value) => {
+      if (!value || (typeof value !== "object" && typeof value !== "function")) return;
+      if (!nativeConversationManager && value.conversations instanceof Map &&
+          typeof value.getConversation === "function") nativeConversationManager = value;
+      if (!nativeQueryClient && typeof value.getQueryData === "function" &&
+          typeof value.getQueryCache === "function") {
+        try {
+          const cache = value.getQueryCache();
+          if (typeof cache?.getAll === "function" && cache.getAll().some((query) => query?.queryHash === '["rate-limit-status"]')) {
+            nativeQueryClient = value;
+          }
+        } catch (_) { /* Codex internals are optional */ }
+      }
+    };
+    const stack = [root];
+    let visited = 0;
+    while (stack.length && visited < 20000 && (!nativeQueryClient || !nativeConversationManager)) {
+      const fiber = stack.pop();
+      visited += 1;
+      if (fiber?.sibling) stack.push(fiber.sibling);
+      if (fiber?.child) stack.push(fiber.child);
+      let hook = fiber?.memoizedState;
+      for (let depth = 0; hook && depth < 48; depth += 1, hook = hook.next) {
+        if (typeof hook !== "object" && typeof hook !== "function") break;
+        consider(hook.memoizedState);
+        consider(hook.baseState);
+        if (!("next" in hook)) break;
+      }
+    }
+  };
+
+  const formatResetDate = (unixSeconds) => {
+    const date = new Date(Number(unixSeconds) * 1000);
+    if (!Number.isFinite(date.getTime())) return "";
+    return `${date.getMonth() + 1}月${date.getDate()}日`;
+  };
+
+  const formatTokenScale = (tokens) => {
+    const value = Number(tokens);
+    if (!Number.isFinite(value) || value <= 0) return "";
+    return value >= 1000 ? `${Math.round(value / 1000)}K` : String(Math.round(value));
+  };
+
+  const readNativeTelemetry = () => {
+    discoverNativeTelemetrySources();
+    const sessionId = currentConversationId();
+    const result = {
+      sessionId,
+      contextRemaining: null,
+      contextUsed: "",
+      contextTotal: "",
+      quotaRemaining: null,
+      quotaReset: "",
+      capturedAt: Date.now(),
+      source: "auto",
+    };
+    try {
+      const rateStatus = nativeQueryClient?.getQueryData?.(["rate-limit-status"]);
+      const rateLimit = rateStatus?.rate_limit;
+      const windows = [rateLimit?.primary_window, rateLimit?.secondary_window]
+        .filter((windowData) => Number.isFinite(Number(windowData?.limit_window_seconds)));
+      const sevenDayWindow = windows.sort((left, right) =>
+        Number(right.limit_window_seconds) - Number(left.limit_window_seconds))[0];
+      if (sevenDayWindow) {
+        result.quotaRemaining = clampPercent(100 - Number(sevenDayWindow.used_percent || 0));
+        result.quotaReset = formatResetDate(sevenDayWindow.reset_at);
+      }
+    } catch (_) { /* fall through to status-card cache */ }
+    try {
+      const conversation = sessionId && (nativeConversationManager?.getConversation?.(sessionId) ||
+        nativeConversationManager?.conversations?.get?.(sessionId));
+      const usage = conversation?.latestTokenUsageInfo;
+      const used = Number(usage?.last?.totalTokens);
+      const total = Number(usage?.modelContextWindow);
+      if (Number.isFinite(used) && Number.isFinite(total) && total > 0) {
+        result.contextRemaining = clampPercent(Math.round((1 - used / total) * 100));
+        result.contextUsed = Math.max(0, Math.round(used)).toLocaleString("en-US");
+        result.contextTotal = formatTokenScale(total);
+      }
+    } catch (_) { /* fall through to status-card cache */ }
+    if (result.quotaRemaining === null && result.contextRemaining === null) return null;
+    writeStatusCache(result);
+    return result;
+  };
+
   const parseConversationStatusText = (text) => {
     const normalized = String(text || "").replace(/\s+/g, " ").trim();
     const session = /会话\s*[:：]\s*([0-9a-f]{8}(?:-[0-9a-f]{4}){3}-[0-9a-f]{12})/i.exec(normalized);
@@ -491,6 +613,8 @@
         }
       }
     }
+    const native = readNativeTelemetry();
+    if (native) return native;
     const cached = readStatusCache();
     return cached ? { ...cached, source: "cached" } : null;
   };
@@ -501,7 +625,7 @@
       return {
         label: `${percent}%`, percent,
         state: percent <= 10 ? "alert" : percent <= 25 ? "warn" : "ok",
-        meta: `${officialStatus.source === "cached" ? "LAST · " : ""}7D LIMIT${officialStatus.quotaReset ? ` · RESET ${officialStatus.quotaReset}` : ""}`,
+        meta: `${officialStatus.source === "cached" ? "LAST · " : officialStatus.source === "auto" ? "AUTO · " : ""}7D LIMIT${officialStatus.quotaReset ? ` · RESET ${officialStatus.quotaReset}` : ""}`,
       };
     }
     const settingsRoots = [...document.querySelectorAll('[role="dialog"], [data-testid*="settings" i]')]
@@ -581,7 +705,7 @@
       setState(contextMeter, remaining <= 10 ? "alert" : remaining <= 25 ? "warn" : "ok");
       setText(contextMeter?.querySelector('[data-field="context-label"]') || contextMeter?.querySelector("b"), "CONTEXT REMAINING");
       setText(contextMeter?.querySelector("strong"), `${remaining}%`);
-      setText(contextMeter?.querySelector("em"), `${officialStatus.source === "cached" ? "LAST · " : ""}USED ${officialStatus.contextUsed} · TOTAL ${officialStatus.contextTotal}`);
+      setText(contextMeter?.querySelector("em"), `${officialStatus.source === "cached" ? "LAST · " : officialStatus.source === "auto" ? "AUTO · " : ""}USED ${officialStatus.contextUsed} · TOTAL ${officialStatus.contextTotal}`);
       contextMeter?.style?.setProperty("--dream-context-fill", `${remaining}%`);
     } else {
       const context = estimateContext(route);
@@ -653,13 +777,67 @@
       if (!panel) continue;
       panels.add(panel);
       panel.classList.add(OPERATION_PANEL_CLASS);
-      panel.dataset.dreamOperation = `OP-${String(count).padStart(2, "0")} · ${count} FILE${count === 1 ? "" : "S"}`;
+      panel.dataset.dreamOperation = `OPERATION REPORT · FILES ${String(count).padStart(2, "0")}`;
     }
     for (const candidate of document.querySelectorAll(`.${OPERATION_PANEL_CLASS}`)) {
       if (!panels.has(candidate)) {
         candidate.classList.remove(OPERATION_PANEL_CLASS);
         delete candidate.dataset?.dreamOperation;
       }
+    }
+  };
+
+  const ensureThreadRail = (runtimeState) => {
+    const rails = new Set();
+    for (const list of document.querySelectorAll('[data-thread-user-message-navigation-rail-list="true"]')) {
+      const rail = list.closest?.("nav");
+      if (!rail) continue;
+      const items = [...list.querySelectorAll("[data-thread-user-message-navigation-item-id]")];
+      if (!items.length) continue;
+      rails.add(rail);
+      rail.classList.add(THREAD_RAIL_CLASS);
+      const nativeCurrent = items.reduce((latest, item, index) =>
+        item.getAttribute("aria-current") === "true" ? index : latest, -1);
+      const currentIndex = nativeCurrent >= 0 ? nativeCurrent : items.length - 1;
+      const stateLabel = runtimeState === "run" ? "RUN" : runtimeState === "hold" ? "HOLD" : "SYNC";
+      rail.dataset.dreamRailPhase = `P${String(currentIndex + 1).padStart(2, "0")} · ${stateLabel}`;
+      rail.dataset.dreamRailRuntime = runtimeState;
+      items.forEach((item, index) => {
+        item.dataset.dreamRailState = index < currentIndex ? "complete" : index === currentIndex ? "current" : "pending";
+      });
+      const current = items[currentIndex];
+      const phaseY = current.offsetTop - Number(list.scrollTop || 0) + Number(current.offsetHeight || 10) / 2;
+      rail.style?.setProperty?.("--dream-rail-phase-y", `${Math.max(8, phaseY)}px`);
+    }
+    for (const candidate of document.querySelectorAll(`.${THREAD_RAIL_CLASS}`)) {
+      if (rails.has(candidate)) continue;
+      candidate.classList.remove(THREAD_RAIL_CLASS);
+      delete candidate.dataset?.dreamRailPhase;
+      delete candidate.dataset?.dreamRailRuntime;
+      candidate.style?.removeProperty?.("--dream-rail-phase-y");
+      candidate.querySelectorAll?.("[data-dream-rail-state]").forEach((item) => delete item.dataset?.dreamRailState);
+    }
+  };
+
+  const ensureRailPreviewPanels = () => {
+    const panels = new Set([...document.querySelectorAll(
+      '[class~="w-80"][class~="rounded-xl"][class~="bg-token-dropdown-background/95"]',
+    )].filter((candidate) => {
+      const portal = candidate.closest?.('[class~="select-none"][class~="whitespace-normal"][class~="!z-20"]');
+      return portal && !candidate.closest?.('[role="menu"], [role="dialog"]');
+    }));
+    for (const panel of panels) {
+      const text = panel.textContent || "";
+      const visual = /\.(?:png|jpe?g|webp)\b/i.test(text) || Boolean(panel.querySelector?.("img"));
+      panel.classList.add(RAIL_PREVIEW_CLASS);
+      panel.dataset.dreamRecord = visual ? "VISUAL RECORD · IMG-01" : "MESSAGE RECORD · THREAD";
+      panel.dataset.dreamRecordStatus = visual ? "RENDER COMPLETE" : "ARCHIVE ONLINE";
+    }
+    for (const candidate of document.querySelectorAll(`.${RAIL_PREVIEW_CLASS}`)) {
+      if (panels.has(candidate)) continue;
+      candidate.classList.remove(RAIL_PREVIEW_CLASS);
+      delete candidate.dataset?.dreamRecord;
+      delete candidate.dataset?.dreamRecordStatus;
     }
   };
 
@@ -742,6 +920,8 @@
     ensureComposerStatus(composer, runtimeState);
     ensureTaskRows(runtimeState);
     ensureOperationPanels();
+    ensureThreadRail(runtimeState);
+    ensureRailPreviewPanels();
 
     let chrome = document.getElementById(CHROME_ID);
     if (!chrome || chrome.parentElement !== document.body) {
@@ -762,6 +942,7 @@
     state?.observer?.disconnect();
     if (state?.timer) clearInterval(state.timer);
     if (state?.scheduler?.timeout) clearTimeout(state.scheduler.timeout);
+    if (state?.resizeHandler) window.removeEventListener?.("resize", state.resizeHandler);
     if (state?.artUrl) URL.revokeObjectURL(state.artUrl);
     delete window[STATE_KEY];
     return true;
@@ -775,6 +956,8 @@
       ensure();
     }, 180);
   };
+  const resizeHandler = () => scheduleEnsure();
+  window.addEventListener?.("resize", resizeHandler);
   observer = new MutationObserver(() => {
     if (samplingNativeShell) return;
     scheduleEnsure();
@@ -787,7 +970,7 @@
   });
   const timer = setInterval(ensure, 5000);
   window[STATE_KEY] = {
-    ensure, cleanup, observer, timer, scheduler, artUrl, profile, config, installToken, version: "1.2.0",
+    ensure, cleanup, observer, timer, scheduler, resizeHandler, artUrl, profile, config, installToken, version: "1.2.0",
   };
   ensure();
   analyzeArt().then((result) => {

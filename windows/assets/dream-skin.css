@@ -110,6 +110,35 @@
   --color-token-badge-background: var(--dream-accent-soft) !important;
 }
 
+:root.codex-dream-skin.dream-theme-light {
+  /* Cool daylight glass: preserve the character art instead of whitening the
+     whole renderer, then recover readability with stronger local surfaces. */
+  --dream-canvas: color-mix(in oklab, oklch(0.94 0.012 245) 94%, var(--dream-accent));
+  --dream-surface: color-mix(in oklab, oklch(0.965 0.009 245) 94%, var(--dream-accent));
+  --dream-surface-raised: color-mix(in oklab, oklch(0.985 0.006 245) 96%, var(--dream-accent));
+  --dream-sidebar: color-mix(in oklab, oklch(0.935 0.014 245) 90%, var(--dream-accent));
+  --dream-text: oklch(0.22 0.022 245);
+  --dream-text-muted: oklch(0.42 0.022 245);
+  --dream-line: color-mix(in oklab, oklch(0.58 0.022 245) 74%, var(--dream-accent));
+  --dream-line-soft: color-mix(in oklab, transparent 68%, var(--dream-accent));
+  --dream-accent-soft: color-mix(in oklab, var(--dream-accent) 16%, var(--dream-surface-raised));
+  --dream-accent-hover: color-mix(in oklab, var(--dream-accent) 23%, var(--dream-surface-raised));
+  --dream-shadow: 0 16px 42px color-mix(in oklab, oklch(0.3 0.025 245) 18%, transparent);
+  --dream-immersive-edge: color-mix(in oklab, var(--dream-surface) 78%, transparent);
+  --dream-immersive-mid: color-mix(in oklab, var(--dream-surface) 56%, transparent);
+  --dream-immersive-far: color-mix(in oklab, var(--dream-surface) 20%, transparent);
+  --dream-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 82%, transparent);
+  --dream-task-immersive-sidebar: color-mix(in oklab, var(--dream-sidebar) 84%, transparent);
+  --dream-immersive-composer: color-mix(in oklab, var(--dream-surface-raised) 96%, var(--dream-accent) 4%);
+  --dream-immersive-line: color-mix(in oklab, var(--dream-line) 86%, transparent);
+  --dream-task-immersive-edge: color-mix(in oklab, var(--dream-surface) 82%, transparent);
+  --dream-task-immersive-mid: color-mix(in oklab, var(--dream-surface) 50%, transparent);
+  --dream-task-immersive-far: color-mix(in oklab, var(--dream-surface) 8%, transparent);
+  --dream-menu-surface: color-mix(in oklab, var(--dream-surface-raised) 96%, transparent);
+  --dream-secondary-panel: color-mix(in oklab, var(--dream-surface) 88%, transparent);
+  --dream-summary-panel: color-mix(in oklab, var(--dream-surface-raised) 92%, transparent);
+}
+
 :root.codex-dream-skin.dream-theme-dark {
   color-scheme: dark;
   --dream-canvas: color-mix(in oklab, oklch(0.16 0.012 245) 96%, var(--dream-accent));
@@ -681,6 +710,15 @@ html.codex-dream-skin.dream-art-wide:is(.dream-task-ambient, .dream-task-banner)
   background-attachment: fixed !important;
 }
 
+/* A short/wide window is wider than the source wallpaper. `cover` would then
+   enlarge the bitmap and crop the character at the top and bottom. Fit the
+   image to the viewport height instead; the theme canvas fills the extra
+   horizontal space while the configured focus position remains in control. */
+html.codex-dream-skin.dream-art-wide.dream-art-fit-height:has(main.main-surface.dream-home-shell) body,
+html.codex-dream-skin.dream-art-wide.dream-art-fit-height:is(.dream-task-ambient, .dream-task-banner):has(main.main-surface:not(.dream-home-shell)) body {
+  background-size: auto 100% !important;
+}
+
 html.codex-dream-skin.dream-art-wide:has(main.main-surface.dream-home-shell)
   aside.app-shell-left-panel,
 html.codex-dream-skin.dream-art-wide:is(.dream-task-ambient, .dream-task-banner):has(main.main-surface:not(.dream-home-shell))
@@ -724,6 +762,16 @@ html.codex-dream-skin.dream-art-wide:is(.dream-task-ambient, .dream-task-banner)
     var(--dream-task-immersive-edge),
     var(--dream-task-immersive-mid) 64%,
     var(--dream-task-immersive-far)) !important;
+}
+
+/* In light mode the pale readability veil must end before the character.
+   Keep the left text column protected, then reveal the wallpaper decisively. */
+html.codex-dream-skin.dream-theme-light.dream-art-wide:is(.dream-task-ambient, .dream-task-banner)
+  main.main-surface:not(.dream-home-shell) {
+  background: linear-gradient(90deg,
+    var(--dream-task-immersive-edge),
+    var(--dream-task-immersive-mid) 42%,
+    var(--dream-task-immersive-far) 72%) !important;
 }
 
 html.codex-dream-skin.dream-art-wide:is(.dream-task-ambient, .dream-task-banner) .dream-task {
@@ -862,7 +910,11 @@ html.codex-dream-skin .dream-magi-module,
 html.codex-dream-skin .dream-composer-status,
 html.codex-dream-skin .dream-task-status-row::before,
 html.codex-dream-skin .dream-task-status-row::after,
-html.codex-dream-skin .dream-operation-panel::before {
+html.codex-dream-skin .dream-operation-panel::before,
+html.codex-dream-skin .dream-eva-thread-rail::before,
+html.codex-dream-skin .dream-eva-thread-rail::after,
+html.codex-dream-skin .dream-eva-record-panel::before,
+html.codex-dream-skin .dream-eva-record-panel::after {
   pointer-events: none !important;
   user-select: none !important;
 }
@@ -1128,16 +1180,132 @@ html.codex-dream-skin .dream-operation-panel::before {
   content: attr(data-dream-operation);
   display: block;
   box-sizing: border-box;
-  min-height: 20px;
-  padding: 6px 12px 5px;
+  min-height: 31px;
+  padding: 9px 14px 8px;
   color: var(--dream-accent);
   border-bottom: 1px solid var(--dream-line);
   background:
     repeating-linear-gradient(90deg, transparent 0 17px, color-mix(in oklab, var(--dream-accent) 14%, transparent) 17px 18px),
     color-mix(in oklab, var(--dream-surface-raised) 68%, transparent);
-  font: 800 9px/1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
-  letter-spacing: .15em;
-  text-align: end;
+  font: 800 12px/1.15 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .11em;
+  text-align: start;
+}
+
+/* Codex's native user-message navigator becomes a narrow entry-plug depth
+   gauge. Only the markers are restyled; the original buttons keep their hit
+   targets, labels and scrolling behavior. */
+html.codex-dream-skin .dream-eva-thread-rail {
+  overflow: visible !important;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail::before {
+  content: "";
+  position: absolute;
+  inset-block: 5px;
+  inset-inline-start: 1px;
+  width: 1px;
+  background: linear-gradient(transparent, var(--dream-line), transparent);
+  opacity: .72;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail::after {
+  content: attr(data-dream-rail-phase);
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 39px;
+  top: var(--dream-rail-phase-y, 50%);
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  min-width: 70px;
+  padding: 5px 7px 4px;
+  color: var(--dream-accent);
+  border: 1px solid color-mix(in oklab, var(--dream-accent) 46%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--dream-surface-raised) 92%, transparent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--dream-accent) 18%, transparent);
+  font: 800 11px/1.1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .035em;
+  text-align: center;
+  white-space: nowrap;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail[data-dream-rail-runtime="hold"]::after {
+  color: #efbe55;
+  border-color: color-mix(in oklab, #efbe55 50%, transparent);
+}
+
+html.codex-dream-skin .dream-eva-thread-rail[data-dream-rail-runtime="run"]::after {
+  animation: dream-status-pulse 1.35s ease-in-out infinite;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail
+  [data-thread-user-message-navigation-item-id] > span > span {
+  height: 2px !important;
+  border-radius: 2px;
+  transition: width 150ms ease, opacity 150ms ease, background-color 150ms ease;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail
+  [data-dream-rail-state="complete"] > span > span {
+  width: 12px !important;
+  background: var(--dream-accent) !important;
+  opacity: .48 !important;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail
+  [data-dream-rail-state="pending"] > span > span {
+  width: 6px !important;
+  background: var(--dream-text-muted) !important;
+  opacity: .34 !important;
+}
+
+html.codex-dream-skin .dream-eva-thread-rail
+  [data-dream-rail-state="current"] > span > span {
+  width: 30px !important;
+  background: var(--dream-accent) !important;
+  opacity: 1 !important;
+  box-shadow: 0 0 8px color-mix(in oklab, var(--dream-accent) 68%, transparent);
+}
+
+/* The native rail hover preview remains the real Codex popup. These two
+   labels add a readable record header without changing its interaction. */
+html.codex-dream-skin .dream-eva-record-panel {
+  position: relative !important;
+  padding-block-start: 43px !important;
+  border: 1px solid color-mix(in oklab, var(--dream-accent) 42%, var(--dream-line)) !important;
+  background:
+    linear-gradient(115deg, color-mix(in oklab, var(--dream-accent) 8%, transparent), transparent 52%),
+    color-mix(in oklab, var(--dream-surface-raised) 94%, transparent) !important;
+}
+
+html.codex-dream-skin .dream-eva-record-panel::before,
+html.codex-dream-skin .dream-eva-record-panel::after {
+  position: absolute;
+  inset-block-start: 0;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  min-height: 34px;
+  font: 800 12px/1.15 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .08em;
+  white-space: nowrap;
+}
+
+html.codex-dream-skin .dream-eva-record-panel::before {
+  content: attr(data-dream-record);
+  inset-inline: 12px 132px;
+  color: var(--dream-accent);
+  border-bottom: 1px solid var(--dream-line);
+}
+
+html.codex-dream-skin .dream-eva-record-panel::after {
+  content: attr(data-dream-record-status);
+  inset-inline-end: 12px;
+  justify-content: flex-end;
+  width: 124px;
+  color: #efb35a;
+  border-bottom: 1px solid var(--dream-line);
 }
 
 @keyframes dream-status-pulse {
@@ -1147,6 +1315,10 @@ html.codex-dream-skin .dream-operation-panel::before {
 
 @media (max-width: 1200px) {
   html.codex-dream-skin .dream-composer-status {
+    display: none;
+  }
+
+  html.codex-dream-skin .dream-eva-thread-rail::after {
     display: none;
   }
 }
