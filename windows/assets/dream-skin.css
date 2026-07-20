@@ -467,7 +467,7 @@ html.codex-dream-skin.dream-task-off .dream-task::before {
   display: none;
 }
 
-html.codex-dream-skin .dream-task > * {
+html.codex-dream-skin .dream-task > :not(header.app-header-tint) {
   position: relative;
   z-index: 1;
 }

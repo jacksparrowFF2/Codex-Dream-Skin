@@ -19,6 +19,16 @@ assert.doesNotMatch(
   /main\.main-surface\s*>\s*header\.app-header-tint\s*\{[^}]*\b(?:position|z-index)\s*:/,
   "The skin must preserve Codex's native fixed header so the side-panel toggle remains reachable.",
 );
+assert.doesNotMatch(
+  css,
+  /\.dream-task\s*>\s*\*\s*\{[^}]*(?:position|z-index)\s*:/,
+  "Task layering must not override the native fixed header through a wildcard child selector.",
+);
+assert.match(
+  css,
+  /\.dream-task\s*>\s*:not\(header\.app-header-tint\)\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s,
+  "Task content may be layered above artwork only when the native header is excluded.",
+);
 
 assert.doesNotMatch(
   css,
