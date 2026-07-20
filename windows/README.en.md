@@ -40,6 +40,15 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-dream-
 
 Exit the Dream Skin tray and close Codex, update the checkout (`git pull`, or download the latest source again), then rerun the install command above. The installer atomically replaces the managed runtime and rebuilds its shortcuts without deleting the active theme, saved themes, or imported images.
 
+To preview changes in the running app and make them permanent only after visual approval, run:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\preview-and-install-dream-skin.ps1
+```
+
+The script injects the current checkout into the verified live session first. After approval it starts a detached deployment helper, closes Codex and the tray, invokes the normal installer, and relaunches the installed runtime. Unsaved composer input can be lost when deployment begins; choosing **No** leaves the preview active without changing the managed runtime.
+
 ## Launch and verify
 
 The `Codex Dream Skin` shortcut is the recommended launcher. It asks for confirmation before restarting an open Codex window.

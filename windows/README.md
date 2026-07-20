@@ -42,6 +42,15 @@ powershell.exe -NoProfile -ExecutionPolicy Bypass -File .\scripts\install-dream-
 
 先退出 Dream Skin 托盘并关闭 Codex，再更新仓库（`git pull`，或重新下载最新源码），然后重新运行上面的安装命令。安装器会原子替换受管运行时并重建快捷方式；当前主题、已保存主题和导入图片不会被删除。
 
+如需先在当前 Codex 会话中热预览，并仅在视觉确认后永久部署，可运行：
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File `
+  .\scripts\preview-and-install-dream-skin.ps1
+```
+
+脚本会先把当前源码注入已验证的活动会话。确认后，它会启动独立部署助手，关闭 Codex 和托盘，调用正式安装器，并从已安装运行时重新启动 Codex。开始部署时未发送的输入可能丢失；选择“否”只保留本次会话的预览，不修改受管运行时。
+
 ## 启动与验证
 
 推荐从 `Codex Dream Skin` 快捷方式启动。它发现 Codex 已经运行时会先询问是否重启。

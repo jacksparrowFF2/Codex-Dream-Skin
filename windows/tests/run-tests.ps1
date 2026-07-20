@@ -832,6 +832,39 @@ try {
   if (-not $restoreSource.Contains('Stop-DreamSkinTrayProcess')) {
     throw 'Complete restore does not stop a separately launched tray process.'
   }
+  $commonSource = Read-DreamSkinUtf8File -Path (Join-Path $Root 'scripts\common-windows.ps1')
+  if (-not $commonSource.Contains('function Stop-DreamSkinTrayProcess')) {
+    throw 'Shared Windows helpers do not expose safe tray shutdown for deployment and restore.'
+  }
+  $previewInstallSource = Read-DreamSkinUtf8File -Path (Join-Path $Root 'scripts\preview-and-install-dream-skin.ps1')
+  foreach ($requiredPreviewInstallBehavior in @(
+    "`$Injector, '--once'",
+    'Confirm-DreamSkinRestart',
+    'deploy-approval-',
+    'Stop-DreamSkinTrayProcess',
+    'Stop-DreamSkinRecordedInjector',
+    'Stop-DreamSkinCodex -Codex $codex -AllowForce',
+    "Join-Path `$PSScriptRoot 'install-dream-skin.ps1'",
+    'Get-DreamSkinRuntimeEnginePaths',
+    'Start-DreamSkinInstalledRuntime',
+    '-WindowStyle Hidden'
+  )) {
+    if (-not $previewInstallSource.Contains($requiredPreviewInstallBehavior)) {
+      throw "Preview-and-install workflow is missing: $requiredPreviewInstallBehavior"
+    }
+  }
+  $previewIndex = $previewInstallSource.IndexOf("`$Injector, '--once'", [System.StringComparison]::Ordinal)
+  $approvalIndex = $previewInstallSource.IndexOf('$approved = Confirm-DreamSkinRestart', [System.StringComparison]::Ordinal)
+  $helperIndex = if ($approvalIndex -ge 0) {
+    $previewInstallSource.IndexOf('Start-Process -FilePath $powershell', $approvalIndex, [System.StringComparison]::Ordinal)
+  } else { -1 }
+  if ($previewIndex -lt 0 -or $approvalIndex -le $previewIndex -or $helperIndex -le $approvalIndex) {
+    throw 'Preview-and-install workflow does not require preview and approval before detached deployment.'
+  }
+  if ($previewInstallSource -match '(?i)Copy-Item[^\r\n]*CodexDreamSkin\\engine') {
+    throw 'Preview-and-install workflow edits the managed runtime directly instead of using the installer.'
+  }
+
   if ($restoreSource.Contains('Start-Process -FilePath $relaunchCodex.Executable') -or
     -not $restoreSource.Contains('Start-DreamSkinCodex -Codex $relaunchCodex')) {
     throw 'Restore still executes the WindowsApps path instead of activating the registered package.'
