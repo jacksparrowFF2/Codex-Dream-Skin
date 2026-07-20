@@ -20,10 +20,25 @@ assert.doesNotMatch(
   "The skin must preserve Codex's native fixed header so the side-panel toggle remains reachable.",
 );
 
+assert.doesNotMatch(
+  css,
+  /--thread-content-max-width|\.dream-home\s*>\s*div:first-child/,
+  "The skin must not replace Codex's native home geometry or content width.",
+);
+assert.doesNotMatch(
+  css,
+  /\[data-testid="home-icon"\]\s*\{[^}]*display:\s*none|\.group\\\/home-suggestions button\s*\{[^}]*(?:min-height|padding|font-size):/s,
+  "The skin must preserve the native home icon and suggestion-card dimensions.",
+);
+assert.doesNotMatch(
+  css,
+  /dream-home-utility::before|dream-home-utility-surface-|:has\(\.dream-home-utility\) \.composer-surface-chrome/,
+  "The skin must preserve Codex's native utility and composer stacking geometry.",
+);
 assert.match(
   css,
-  /\.dream-home-utility\s*\{[^}]*margin-inline-start:\s*var\(--dream-home-utility-margin-start\)\s*!important;[^}]*padding-inline-start:\s*var\(--dream-home-utility-padding-start\)\s*!important;/s,
-  "The home utility bar must use renderer-measured geometry instead of a fixed gutter correction.",
+  /\.dream-home \.group\\\/home-suggestions button\s*\{[^}]*color:\s*var\(--dream-text\)\s*!important;[^}]*background:\s*var\(--dream-surface-raised\)\s*!important;/s,
+  "Suggestion cards may be themed without changing their layout.",
 );
 assert.match(
   css,
@@ -544,10 +559,7 @@ assert.equal(configured.rootStyles.get("--dream-accent-ink"), "rgb(26 24 28)");
 assert.equal(configured.routeClasses.has("dream-home"), true);
 assert.equal(configured.routeClasses.has("dream-task"), false);
 assert.equal(configured.utilityClasses.has("dream-home-utility"), true);
-assert.equal(configured.utilityStyles.get("--dream-home-utility-margin-start"), "-10px");
-assert.equal(configured.utilityStyles.get("--dream-home-utility-margin-end"), "-10px");
-assert.equal(configured.utilityStyles.get("--dream-home-utility-padding-start"), "18px");
-assert.equal(configured.utilityStyles.get("--dream-home-utility-padding-end"), "18px");
+assert.equal(configured.utilityStyles.size, 0);
 assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), true);
 assert.equal(configured.summaryClasses.has("dream-summary-panel"), true);
 assert.equal(configured.attachmentClasses.has("dream-attachment-panel"), true);

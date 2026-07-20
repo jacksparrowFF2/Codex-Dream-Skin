@@ -480,174 +480,30 @@ html.codex-dream-skin .dream-task [data-message-author-role] {
 /* The home route keeps the source image expressive, with a semantic safe-area
    wash selected from image focus metadata. */
 html.codex-dream-skin .dream-home {
-  --thread-content-max-width: min(1180px, calc(100cqw - 56px)) !important;
   overflow-x: hidden !important;
   background: var(--dream-surface) !important;
 }
 
-.dream-home > div:first-child {
-  min-height: 100% !important;
-  padding-top: 24px !important;
-}
-
-.dream-home > div:first-child > div:first-child {
-  flex: 0 0 clamp(390px, 42cqw, 510px) !important;
-  min-height: 390px !important;
-  align-items: flex-start !important;
-  padding-bottom: 0 !important;
-}
-
-.dream-home > div:first-child > div:first-child > div:first-child {
-  position: relative !important;
-  isolation: isolate;
-  width: calc(100% - 56px) !important;
-  max-width: 1180px !important;
-  height: clamp(230px, 27cqw, 326px) !important;
-  min-height: 230px !important;
-  flex: 0 1 auto !important;
-  padding: 0 !important;
-  overflow: hidden !important;
-  border: 1px solid var(--dream-line) !important;
-  border-radius: 20px !important;
-  background-image: var(--dream-art) !important;
-  background-repeat: no-repeat !important;
-  background-size: cover !important;
-  background-position: var(--dream-art-position) !important;
-  box-shadow: var(--dream-shadow) !important;
-}
-
-html.codex-dream-skin.dream-art-wide .dream-home > div:first-child > div:first-child > div:first-child {
-  background-size: cover !important;
-}
-
-.dream-home > div:first-child > div:first-child > div:first-child::before {
-  content: "";
-  position: absolute;
-  z-index: 0;
-  inset: 0;
-  pointer-events: none;
-  background: linear-gradient(90deg, var(--dream-hero-shade) 0 32%, transparent 70%);
-}
-
-html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child::before {
-  background: linear-gradient(270deg, var(--dream-hero-shade) 0 32%, transparent 70%);
-}
-
-html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child::before {
-  background: radial-gradient(ellipse at center, var(--dream-hero-shade) 0 23%, transparent 72%);
-}
-
-html.codex-dream-skin.dream-safe-none .dream-home > div:first-child > div:first-child > div:first-child::before {
-  background: transparent;
-}
-
-.dream-home > div:first-child > div:first-child > div:first-child > div:first-child {
-  position: relative;
-  z-index: 1;
-  box-sizing: border-box;
-  height: 100%;
-  align-items: center !important;
-  justify-content: flex-start !important;
-  padding: 30px 40px;
-}
-
-.dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
-  width: min(48%, 520px) !important;
-  align-items: flex-start !important;
-  gap: 0 !important;
-}
-
-html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child > div:first-child {
-  justify-content: flex-end !important;
-}
-
-html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
-  align-items: flex-end !important;
-  text-align: right !important;
-}
-
-html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child > div:first-child {
-  justify-content: center !important;
-}
-
-html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
-  align-items: center !important;
-  text-align: center !important;
-}
-
-.dream-home [data-testid="home-icon"] {
-  display: none !important;
-}
-
 .dream-home [data-feature="game-source"] {
-  display: flex !important;
-  flex-direction: column !important;
-  align-items: inherit !important;
-  justify-content: flex-start !important;
-  max-width: 100% !important;
   color: var(--dream-text) !important;
-  font-size: 28px !important;
-  line-height: 1.25 !important;
-  font-weight: 720 !important;
-  text-align: inherit !important;
   text-shadow: 0 1px 16px var(--dream-surface);
-  opacity: 1 !important;
-  pointer-events: auto !important;
 }
 
 .dream-home [data-feature="game-source"] button {
-  margin: 0 4px;
-  padding: 2px 7px;
-  border: 1px solid var(--dream-line);
-  border-radius: 999px;
   color: var(--dream-text) !important;
-  background: var(--dream-accent-soft) !important;
   text-underline-offset: 4px;
 }
 
-.dream-home > div:first-child > div:first-child > div:first-child > div:nth-child(2) {
-  left: 0 !important;
-  right: 0 !important;
-  top: 100% !important;
-  margin-top: 16px !important;
-}
-
-.dream-home .group\/home-suggestions {
-  overflow: visible !important;
-}
-
 .dream-home .group\/home-suggestions button {
-  min-height: 112px !important;
-  padding: 16px 14px !important;
   color: var(--dream-text) !important;
   border: 1px solid var(--dream-line-soft) !important;
-  border-radius: 16px !important;
   background: var(--dream-surface-raised) !important;
   box-shadow: 0 8px 24px color-mix(in oklab, var(--dream-accent) 6%, transparent) !important;
-  transition: transform 180ms cubic-bezier(.22, 1, .36, 1), border-color 180ms cubic-bezier(.22, 1, .36, 1), background-color 180ms cubic-bezier(.22, 1, .36, 1) !important;
 }
 
 .dream-home .group\/home-suggestions button:hover {
-  transform: translateY(-2px) !important;
   border-color: var(--dream-line) !important;
   background: var(--dream-accent-soft) !important;
-}
-
-.dream-home .group\/home-suggestions button > span:first-child > span:first-child {
-  width: 38px;
-  height: 38px;
-  display: grid !important;
-  place-items: center;
-  border-radius: 12px;
-  color: var(--dream-accent-ink) !important;
-  background: var(--dream-accent) !important;
-  box-shadow: 0 0 0 6px var(--dream-accent-soft);
-}
-
-.dream-home .group\/home-suggestions button svg {
-  width: 20px !important;
-  height: 20px !important;
-  color: currentColor !important;
 }
 
 html.codex-dream-skin .composer-surface-chrome {
@@ -799,18 +655,6 @@ html.codex-dream-skin.dream-art-wide main.main-surface [role="main"] {
   background: transparent !important;
 }
 
-html.codex-dream-skin.dream-art-wide main.main-surface.dream-home-shell
-  .dream-home > div:first-child > div:first-child > div:first-child {
-  border: 0 !important;
-  border-radius: 0 !important;
-  background: transparent !important;
-  box-shadow: none !important;
-}
-
-html.codex-dream-skin.dream-art-wide main.main-surface.dream-home-shell
-  .dream-home > div:first-child > div:first-child > div:first-child::before {
-  content: none !important;
-}
 
 html.codex-dream-skin.dream-art-wide main.main-surface.dream-home-shell
   .dream-home .group\/home-suggestions button {
@@ -840,29 +684,6 @@ html.codex-dream-skin.dream-art-wide .composer-surface-chrome::before {
   content: none !important;
 }
 
-/* Current Codex builds render the home project picker in a hashed utility bar.
-   Merge it with the composer so the bottom control reads as one surface. */
-html.codex-dream-skin .dream-home-utility {
-  /* Native inset changes between an empty new task and a populated draft.
-     The renderer measures both edges before setting these values. */
-  margin-inline-start: var(--dream-home-utility-margin-start) !important;
-  margin-inline-end: var(--dream-home-utility-margin-end) !important;
-  padding-inline-start: var(--dream-home-utility-padding-start) !important;
-  padding-inline-end: var(--dream-home-utility-padding-end) !important;
-  border: 1px solid var(--dream-line) !important;
-  border-bottom: 0 !important;
-  border-radius: 18px 18px 0 0 !important;
-  background: var(--dream-immersive-composer) !important;
-  box-shadow: none !important;
-}
-
-html.codex-dream-skin .dream-home:has(.dream-home-utility) .composer-surface-chrome {
-  border-radius: 0 0 18px 18px !important;
-  box-shadow: 0 10px 30px color-mix(in oklab, var(--dream-canvas) 20%, transparent),
-    inset 1px 0 var(--dream-immersive-line),
-    inset -1px 0 var(--dream-immersive-line),
-    inset 0 -1px var(--dream-immersive-line) !important;
-}
 
 /* Plugins, scheduled tasks and search routes ship opaque sticky wrappers.
    Clear only full-window or sticky route chrome, leaving functional cards and
@@ -1320,73 +1141,6 @@ html.codex-dream-skin .dream-eva-record-panel::after {
 
   html.codex-dream-skin .dream-eva-thread-rail::after {
     display: none;
-  }
-}
-
-@media (max-width: 1120px) {
-  html.codex-dream-skin .dream-home {
-    --thread-content-max-width: min(940px, calc(100cqw - 36px)) !important;
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child {
-    width: calc(100% - 36px) !important;
-  }
-}
-
-@media (max-width: 900px) {
-  .dream-home > div:first-child {
-    padding-top: 16px !important;
-  }
-
-  .dream-home > div:first-child > div:first-child {
-    flex-basis: 370px !important;
-    min-height: 370px !important;
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child {
-    height: 220px !important;
-    min-height: 220px !important;
-    border-radius: 16px !important;
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child > div:first-child {
-    padding: 24px;
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
-    width: 62% !important;
-  }
-
-  .dream-home [data-feature="game-source"] {
-    font-size: 22px !important;
-  }
-
-  .dream-home .group\/home-suggestions button {
-    min-height: 104px !important;
-    padding: 12px 10px !important;
-    font-size: 12px !important;
-  }
-}
-
-@media (max-width: 680px) {
-  .dream-home > div:first-child > div:first-child > div:first-child::before,
-  html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child::before,
-  html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child::before {
-    background: color-mix(in oklab, var(--dream-surface) 78%, transparent);
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child > div:first-child,
-  html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child > div:first-child,
-  html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child > div:first-child {
-    justify-content: center !important;
-  }
-
-  .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child,
-  html.codex-dream-skin.dream-safe-right .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child,
-  html.codex-dream-skin.dream-safe-center .dream-home > div:first-child > div:first-child > div:first-child > div:first-child > div:first-child {
-    width: min(88%, 440px) !important;
-    align-items: center !important;
-    text-align: center !important;
   }
 }
 

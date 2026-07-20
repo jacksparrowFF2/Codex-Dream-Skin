@@ -30,12 +30,6 @@
     "--dream-image-luma",
   ];
   const HOME_UTILITY_CLASS = "dream-home-utility";
-  const HOME_UTILITY_PROPERTIES = [
-    "--dream-home-utility-margin-start",
-    "--dream-home-utility-margin-end",
-    "--dream-home-utility-padding-start",
-    "--dream-home-utility-padding-end",
-  ];
   const SECONDARY_DRAWER_CLASS = "dream-secondary-drawer";
   const SUMMARY_PANEL_CLASS = "dream-summary-panel";
   const ATTACHMENT_PANEL_CLASS = "dream-attachment-panel";
@@ -313,10 +307,7 @@
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
     document.querySelectorAll(".dream-task").forEach((node) => node.classList.remove("dream-task"));
     document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
-    document.querySelectorAll(`.${HOME_UTILITY_CLASS}`).forEach((node) => {
-      node.classList.remove(HOME_UTILITY_CLASS);
-      for (const property of HOME_UTILITY_PROPERTIES) node.style?.removeProperty?.(property);
-    });
+    document.querySelectorAll(`.${HOME_UTILITY_CLASS}`).forEach((node) => node.classList.remove(HOME_UTILITY_CLASS));
     document.querySelectorAll(`.${SECONDARY_DRAWER_CLASS}`).forEach((node) => node.classList.remove(SECONDARY_DRAWER_CLASS));
     document.querySelectorAll(`.${SUMMARY_PANEL_CLASS}`).forEach((node) => node.classList.remove(SUMMARY_PANEL_CLASS));
     document.querySelectorAll(`.${ATTACHMENT_PANEL_CLASS}`).forEach((node) => node.classList.remove(ATTACHMENT_PANEL_CLASS));
@@ -387,37 +378,7 @@
     root.style.setProperty("--dream-image-luma", profile.luma.toFixed(3));
   };
 
-  const alignHomeUtility = (utility, composer) => {
-    const wasSampling = samplingNativeShell;
-    samplingNativeShell = true;
-    try {
-      utility.classList.remove(HOME_UTILITY_CLASS);
-      for (const property of HOME_UTILITY_PROPERTIES) utility.style?.removeProperty?.(property);
-      const utilityRect = utility.getBoundingClientRect?.();
-      const composerRect = composer?.getBoundingClientRect?.() || utilityRect;
-      const nativeStyle = getComputedStyle(utility);
-      if (!utilityRect || !composerRect) {
-        utility.classList.add(HOME_UTILITY_CLASS);
-        return;
-      }
-      const clampOffset = (value) => Math.max(-32, Math.min(32, Math.round(value * 10) / 10));
-      /* The hashed home utility is a centered w-full flex item. Inline margins
-         move each rendered edge by twice their value, so compensate half of
-         the native edge inset rather than applying the raw difference. */
-      const marginStart = clampOffset((composerRect.left - utilityRect.left) / 2);
-      const marginEnd = clampOffset((utilityRect.right - composerRect.right) / 2);
-      const paddingStart = Number.parseFloat(nativeStyle.paddingInlineStart || nativeStyle.paddingLeft) || 0;
-      const paddingEnd = Number.parseFloat(nativeStyle.paddingInlineEnd || nativeStyle.paddingRight) || 0;
-      utility.style.setProperty("--dream-home-utility-margin-start", `${marginStart}px`);
-      utility.style.setProperty("--dream-home-utility-margin-end", `${marginEnd}px`);
-      utility.style.setProperty("--dream-home-utility-padding-start", `${paddingStart + Math.max(0, -marginStart)}px`);
-      utility.style.setProperty("--dream-home-utility-padding-end", `${paddingEnd + Math.max(0, -marginEnd)}px`);
-      utility.classList.add(HOME_UTILITY_CLASS);
-    } finally {
-      observer?.takeRecords?.();
-      samplingNativeShell = wasSampling;
-    }
-  };
+  const markHomeUtility = (utility) => utility.classList.add(HOME_UTILITY_CLASS);
 
   const setText = (element, value) => {
     if (element && element.textContent !== value) element.textContent = value;
@@ -883,13 +844,9 @@
     }
     const utilityBars = new Set(home ? home.querySelectorAll('[class*="_homeUtilityBar_"]') : []);
     for (const candidate of document.querySelectorAll(`.${HOME_UTILITY_CLASS}`)) {
-      if (!utilityBars.has(candidate)) {
-        candidate.classList.remove(HOME_UTILITY_CLASS);
-        for (const property of HOME_UTILITY_PROPERTIES) candidate.style?.removeProperty?.(property);
-      }
+      if (!utilityBars.has(candidate)) candidate.classList.remove(HOME_UTILITY_CLASS);
     }
-    const homeComposer = home?.querySelector?.(".composer-surface-chrome") || null;
-    for (const candidate of utilityBars) alignHomeUtility(candidate, homeComposer);
+    for (const candidate of utilityBars) markHomeUtility(candidate);
     shellMain.classList.toggle("dream-home-shell", Boolean(home));
 
     const secondaryDrawers = new Set(document.querySelectorAll(
