@@ -19,6 +19,7 @@
     "dream-task-ambient",
     "dream-task-banner",
     "dream-task-off",
+    "dream-eva-office-protocol",
   ];
   const ROOT_PROPERTIES = [
     "--dream-art",
@@ -40,6 +41,9 @@
   const OPERATION_PANEL_CLASS = "dream-operation-panel";
   const THREAD_RAIL_CLASS = "dream-eva-thread-rail";
   const RAIL_PREVIEW_CLASS = "dream-eva-record-panel";
+  const SIDEBAR_SECTION_CLASS = "dream-eva-section-label";
+  const HEAVY_REFRESH_INTERVAL_MS = 900;
+  const SIDEBAR_REFRESH_INTERVAL_MS = 2000;
   const installToken = {};
   let samplingNativeShell = false;
   let observer = null;
@@ -47,6 +51,10 @@
   let nativeConversationManager = null;
   let nativeTelemetryRoot = null;
   let nativeTelemetryLastScan = 0;
+  let lastHeavyRefreshAt = 0;
+  let lastRuntimeState = "ready";
+  let lastSidebarSectionScanAt = 0;
+  let sidebarSectionRoot = null;
   window.__CODEX_DREAM_SKIN_DISABLED__ = false;
 
   const clamp = (value, min = 0, max = 1) => Math.min(max, Math.max(min, Number(value)));
@@ -98,6 +106,7 @@
       : "auto";
     const metadataRatio = Number(config?.artMetadata?.ratio);
     return {
+      evaOfficeProtocol: config.id === "preset-eva-office-protocol",
       appearance,
       safeArea,
       taskMode,
@@ -331,6 +340,8 @@
       delete node.dataset?.dreamRecord;
       delete node.dataset?.dreamRecordStatus;
     });
+    document.querySelectorAll(`.${SIDEBAR_SECTION_CLASS}`).forEach((node) =>
+      node.classList.remove(SIDEBAR_SECTION_CLASS));
     document.getElementById(MAGI_MODULE_ID)?.remove();
     document.getElementById(COMPOSER_STATUS_ID)?.remove();
     document.getElementById(STYLE_ID)?.remove();
@@ -353,6 +364,7 @@
       : "rgb(250 248 251)";
     root.classList.toggle("dream-theme-light", appearance === "light");
     root.classList.toggle("dream-theme-dark", appearance === "dark");
+    root.classList.toggle("dream-eva-office-protocol", config.evaOfficeProtocol);
     root.classList.toggle("dream-art-wide", profile.aspect >= 1.75);
     root.classList.toggle("dream-art-standard", profile.aspect < 1.75);
     const viewportWidth = Number(window.innerWidth || document.documentElement?.clientWidth || 0);
@@ -721,6 +733,27 @@
     }
   };
 
+  const ensureSidebarSectionLabels = () => {
+    const labels = new Set();
+    const sidebar = document.querySelector("aside.app-shell-left-panel");
+    const now = Date.now();
+    if (config.evaOfficeProtocol && sidebar === sidebarSectionRoot &&
+        now - lastSidebarSectionScanAt < SIDEBAR_REFRESH_INTERVAL_MS) return;
+    sidebarSectionRoot = sidebar;
+    lastSidebarSectionScanAt = now;
+    if (config.evaOfficeProtocol && sidebar) {
+      for (const candidate of sidebar.querySelectorAll?.("span, div, p") || []) {
+        if (candidate.children.length > 0 || candidate.closest?.("button, [role='button'], a")) continue;
+        const text = (candidate.textContent || "").replace(/\s+/g, " ").trim();
+        if (/^(?:置顶|项目|Pinned|Projects)$/i.test(text)) labels.add(candidate);
+      }
+    }
+    for (const candidate of document.querySelectorAll(`.${SIDEBAR_SECTION_CLASS}`)) {
+      if (!labels.has(candidate)) candidate.classList.remove(SIDEBAR_SECTION_CLASS);
+    }
+    for (const candidate of labels) candidate.classList.add(SIDEBAR_SECTION_CLASS);
+  };
+
   const ensureOperationPanels = () => {
     const panels = new Set();
     const labels = [...document.querySelectorAll("body *")].filter((candidate) =>
@@ -874,19 +907,28 @@
     }
     for (const candidate of attachmentPanels) candidate.classList.add(ATTACHMENT_PANEL_CLASS);
 
-    const taskRoute = [...document.querySelectorAll('[role="main"]')]
-      .filter((candidate) => candidate !== home && isVisible(candidate))
-      .sort((left, right) => (right.innerText || right.textContent || "").length -
-        (left.innerText || left.textContent || "").length)[0] ||
-      (isVisible(shellMain) ? shellMain : null);
+    const now = Date.now();
+    const refreshHeavy = now - lastHeavyRefreshAt >= HEAVY_REFRESH_INTERVAL_MS;
+    if (refreshHeavy) {
+      lastHeavyRefreshAt = now;
+      lastRuntimeState = taskRuntimeState();
+    }
+    const runtimeState = lastRuntimeState;
     const composer = shellComposer;
-    const runtimeState = taskRuntimeState();
-    ensureMagiModule([...summaryPanels][0] || null, taskRoute, composer, runtimeState);
+    if (refreshHeavy) {
+      const taskRoute = [...document.querySelectorAll('[role="main"]')]
+        .filter((candidate) => candidate !== home && isVisible(candidate))
+        .sort((left, right) => (right.innerText || right.textContent || "").length -
+          (left.innerText || left.textContent || "").length)[0] ||
+        (isVisible(shellMain) ? shellMain : null);
+      ensureMagiModule([...summaryPanels][0] || null, taskRoute, composer, runtimeState);
+      ensureOperationPanels();
+      ensureThreadRail(runtimeState);
+      ensureRailPreviewPanels();
+    }
     ensureComposerStatus(composer, runtimeState);
     ensureTaskRows(runtimeState);
-    ensureOperationPanels();
-    ensureThreadRail(runtimeState);
-    ensureRailPreviewPanels();
+    ensureSidebarSectionLabels();
 
     let chrome = document.getElementById(CHROME_ID);
     if (!chrome || chrome.parentElement !== document.body) {
@@ -919,7 +961,7 @@
     scheduler.timeout = setTimeout(() => {
       scheduler.timeout = null;
       ensure();
-    }, 180);
+    }, 240);
   };
   const resizeHandler = () => scheduleEnsure();
   window.addEventListener?.("resize", resizeHandler);

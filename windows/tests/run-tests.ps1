@@ -763,6 +763,19 @@ try {
   foreach ($requiredTrayAction in @('System.Windows.Forms.NotifyIcon', '暂停皮肤', '继续显示皮肤', '更换背景图', '已保存主题', '完全恢复 Codex')) {
     if (-not $traySource.Contains($requiredTrayAction)) { throw "Tray action is missing: $requiredTrayAction" }
   }
+  foreach ($requiredTrayIconToken in @(
+    'function New-DreamSkinTrayIcon',
+    'DreamSkinTrayNativeMethods',
+    '$notify.Icon = $trayIcon',
+    '$trayIcon.Dispose()'
+  )) {
+    if (-not $traySource.Contains($requiredTrayIconToken)) {
+      throw "Custom EVA/Codex tray icon is missing required token: $requiredTrayIconToken"
+    }
+  }
+  if ($traySource.Contains('[System.Drawing.SystemIcons]::Application')) {
+    throw 'Tray still uses the generic Windows application icon.'
+  }
   if (-not $traySource.Contains('Invoke-DreamSkinLiveRemove') -or
     -not $traySource.Contains("Set-DreamSkinPaused -Paused `$true") -or
     -not $traySource.Contains("Set-DreamSkinPaused -Paused `$false") -or

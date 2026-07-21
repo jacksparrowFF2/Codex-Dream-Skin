@@ -184,6 +184,24 @@ assert.doesNotMatch(template, /sendMessageFromView|account\/rateLimits\/read|acc
   "Automatic telemetry must remain read-only and must not send commands or duplicate native requests.");
 assert.match(template, /dream-usage-meter > em/,
   "A live upgrade must replace legacy MAGI markup that cannot display official quota metadata.");
+assert.match(template, /config\.id === "preset-eva-office-protocol"/,
+  "The office protocol treatment must be selected from the active theme ID.");
+assert.match(template, /classList\.toggle\("dream-eva-office-protocol", config\.evaOfficeProtocol\)/,
+  "The renderer must expose a reversible office-protocol root class.");
+assert.match(template, /ensureSidebarSectionLabels\(\)/,
+  "The renderer must decorate native sidebar section labels without replacing them.");
+assert.match(css, /\.dream-eva-office-protocol \.dream-eva-section-label::before\s*\{[^}]*border-inline-start:\s*7px solid var\(--dream-eva-warning\)/s,
+  "The office protocol must use a restrained warning marker on native section labels.");
+assert.match(css, /\.dream-eva-office-protocol aside\.app-shell-left-panel \[aria-current="page"\]\s*\{[^}]*--dream-eva-violet/s,
+  "The selected native task must receive the office protocol's violet synchronization layer.");
+assert.match(css, /\.dream-eva-office-protocol[\s\S]*--color-token-menubar-selection-background:[^;]*--dream-eva-violet[\s\S]*button:is\(\[aria-expanded="true"\]/s,
+  "The native application-menu trigger must expose the office theme while its OS menu is open.");
+assert.match(css, /\.dream-eva-thread-rail::after\s*\{[^}]*inset-inline-start:\s*2px;/s,
+  "The phase badge must stay inside the navigation rail instead of covering thread content.");
+assert.match(template, /HEAVY_REFRESH_INTERVAL_MS = 900[\s\S]*if \(refreshHeavy\)[\s\S]*ensureOperationPanels\(\)/,
+  "Expensive document telemetry scans must be throttled during streaming updates.");
+assert.match(template, /SIDEBAR_REFRESH_INTERVAL_MS = 2000[\s\S]*now - lastSidebarSectionScanAt/,
+  "Office sidebar label discovery must avoid rescanning every DOM mutation.");
 assert.match(template, /querySelectorAll\('\[role="dialog"\], \[data-testid\*="settings" i\]'\)/,
   "Quota discovery must remain limited to visible official settings surfaces.");
 
@@ -603,6 +621,11 @@ assert.equal(analyzed.rootClasses.has("dream-task-banner"), true);
 assert.equal(analyzed.rootClasses.has("dream-safe-left"), true);
 assert.notEqual(analyzed.rootStyles.get("--dream-accent"), "rgb(216 104 119)");
 
+const officeProtocol = createFixture({ shellPresent: true });
+vm.runInNewContext(buildPayload({ id: "preset-eva-office-protocol" }), officeProtocol.context);
+assert.equal(officeProtocol.rootClasses.has("dream-eva-office-protocol"), true);
+assert.equal(officeProtocol.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
+assert.equal(officeProtocol.rootClasses.has("dream-eva-office-protocol"), false);
 const darkAccent = createFixture({ shellPresent: true });
 vm.runInNewContext(buildPayload({ palette: { accent: "#56317d" } }), darkAccent.context);
 assert.equal(darkAccent.rootStyles.get("--dream-accent-ink"), "rgb(250 248 251)");

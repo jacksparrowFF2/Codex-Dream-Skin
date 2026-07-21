@@ -8,6 +8,73 @@ Add-Type -AssemblyName Microsoft.VisualBasic
 . (Join-Path $PSScriptRoot 'common-windows.ps1')
 . (Join-Path $PSScriptRoot 'theme-windows.ps1')
 
+if (-not ('DreamSkinTrayNativeMethods' -as [type])) {
+  Add-Type -TypeDefinition @'
+using System;
+using System.Runtime.InteropServices;
+
+public static class DreamSkinTrayNativeMethods
+{
+    [DllImport("user32.dll", SetLastError = true)]
+    [return: MarshalAs(UnmanagedType.Bool)]
+    public static extern bool DestroyIcon(IntPtr handle);
+}
+'@
+}
+
+function New-DreamSkinTrayIcon {
+  # MAGI-style hexagon + EVA-01 colors + a Codex terminal prompt, tuned for 16 px trays.
+  $bitmap = [System.Drawing.Bitmap]::new(32, 32, [System.Drawing.Imaging.PixelFormat]::Format32bppArgb)
+  $graphics = [System.Drawing.Graphics]::FromImage($bitmap)
+  $background = [System.Drawing.SolidBrush]::new([System.Drawing.Color]::FromArgb(255, 28, 17, 43))
+  $purple = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(255, 164, 93, 255), 2.5)
+  $orange = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(255, 255, 126, 48), 2.2)
+  $green = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(255, 170, 255, 49), 3.2)
+  $cyan = [System.Drawing.Pen]::new([System.Drawing.Color]::FromArgb(255, 86, 231, 255), 3.2)
+  try {
+    $graphics.SmoothingMode = [System.Drawing.Drawing2D.SmoothingMode]::AntiAlias
+    $graphics.Clear([System.Drawing.Color]::Transparent)
+    $hexagon = [System.Drawing.PointF[]]@(
+      [System.Drawing.PointF]::new(16, 2),
+      [System.Drawing.PointF]::new(27.5, 8.5),
+      [System.Drawing.PointF]::new(27.5, 23.5),
+      [System.Drawing.PointF]::new(16, 30),
+      [System.Drawing.PointF]::new(4.5, 23.5),
+      [System.Drawing.PointF]::new(4.5, 8.5)
+    )
+    $graphics.FillPolygon($background, $hexagon)
+    $graphics.DrawPolygon($purple, $hexagon)
+    $graphics.DrawArc($orange, 5.8, 3.8, 20.4, 12.5, 202, 136)
+
+    $green.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+    $green.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+    $cyan.StartCap = [System.Drawing.Drawing2D.LineCap]::Round
+    $cyan.EndCap = [System.Drawing.Drawing2D.LineCap]::Round
+    $graphics.DrawLines($green, [System.Drawing.PointF[]]@(
+      [System.Drawing.PointF]::new(10, 10.5),
+      [System.Drawing.PointF]::new(16.5, 16),
+      [System.Drawing.PointF]::new(10, 21.5)
+    ))
+    $graphics.DrawLine($cyan, 18.5, 21.5, 24.5, 21.5)
+  } finally {
+    $cyan.Dispose()
+    $green.Dispose()
+    $orange.Dispose()
+    $purple.Dispose()
+    $background.Dispose()
+    $graphics.Dispose()
+  }
+
+  $handle = $bitmap.GetHicon()
+  try {
+    $sourceIcon = [System.Drawing.Icon]::FromHandle($handle)
+    return $sourceIcon.Clone()
+  } finally {
+    [void][DreamSkinTrayNativeMethods]::DestroyIcon($handle)
+    $bitmap.Dispose()
+  }
+}
+
 Assert-DreamSkinPort -Port $Port
 $SkillRoot = Split-Path -Parent $PSScriptRoot
 $StateRoot = Join-Path $env:LOCALAPPDATA 'CodexDreamSkin'
@@ -23,8 +90,9 @@ try {
   try { $acquired = $mutex.WaitOne(0) } catch [System.Threading.AbandonedMutexException] { $acquired = $true }
   if (-not $acquired) { exit 0 }
 
+  $trayIcon = New-DreamSkinTrayIcon
   $notify = [System.Windows.Forms.NotifyIcon]::new()
-  $notify.Icon = [System.Drawing.SystemIcons]::Application
+  $notify.Icon = $trayIcon
   $notify.Text = 'Codex Dream Skin'
   $notify.Visible = $true
   $menu = [System.Windows.Forms.ContextMenuStrip]::new()
@@ -207,6 +275,7 @@ try {
   [System.Windows.Forms.Application]::Run()
 } finally {
   if ($null -ne $notify) { $notify.Dispose() }
+  if ($null -ne $trayIcon) { $trayIcon.Dispose() }
   if ($acquired) { try { $mutex.ReleaseMutex() } catch {} }
   $mutex.Dispose()
 }
