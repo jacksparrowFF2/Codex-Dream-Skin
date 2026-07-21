@@ -81,14 +81,21 @@ function Test-DreamSkinTrayActive {
   }
 }
 function Stop-DreamSkinTrayProcess {
-  $trayScript = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'tray-dream-skin.ps1'))
+  param([string]$StateRoot = (Join-Path $env:LOCALAPPDATA 'CodexDreamSkin'))
+
+  $sourceTray = [System.IO.Path]::GetFullPath((Join-Path $PSScriptRoot 'tray-dream-skin.ps1'))
+  $installedTray = (Get-DreamSkinRuntimeEnginePaths -StateRoot $StateRoot).Tray
+  $trayScripts = @($sourceTray, $installedTray) | Select-Object -Unique
   try {
     $processes = Get-CimInstance Win32_Process -Filter "Name = 'powershell.exe' OR Name = 'pwsh.exe'" `
       -ErrorAction Stop
     foreach ($process in $processes) {
       if ($process.ProcessId -eq $PID -or -not $process.CommandLine) { continue }
-      if ($process.CommandLine.IndexOf($trayScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
-        Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop
+      foreach ($trayScript in $trayScripts) {
+        if ($process.CommandLine.IndexOf($trayScript, [System.StringComparison]::OrdinalIgnoreCase) -ge 0) {
+          Stop-Process -Id $process.ProcessId -Force -ErrorAction Stop
+          break
+        }
       }
     }
   } catch {

@@ -836,6 +836,14 @@ try {
   if (-not $commonSource.Contains('function Stop-DreamSkinTrayProcess')) {
     throw 'Shared Windows helpers do not expose safe tray shutdown for deployment and restore.'
   }
+  foreach ($requiredTrayShutdownBehavior in @(
+    'Get-DreamSkinRuntimeEnginePaths -StateRoot $StateRoot',
+    '@($sourceTray, $installedTray) | Select-Object -Unique'
+  )) {
+    if (-not $commonSource.Contains($requiredTrayShutdownBehavior)) {
+      throw "Tray shutdown does not recognize both source and installed runtime paths: $requiredTrayShutdownBehavior"
+    }
+  }
   $previewInstallSource = Read-DreamSkinUtf8File -Path (Join-Path $Root 'scripts\preview-and-install-dream-skin.ps1')
   foreach ($requiredPreviewInstallBehavior in @(
     "`$Injector, '--once'",

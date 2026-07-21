@@ -46,7 +46,7 @@ function Invoke-DreamSkinApprovedDeployment {
   if ($null -eq $codex) { $codex = Get-DreamSkinCodexInstall }
 
   try {
-    Stop-DreamSkinTrayProcess
+    Stop-DreamSkinTrayProcess -StateRoot $stateRoot
     $trayDeadline = (Get-Date).AddSeconds(5)
     while ((Test-DreamSkinTrayActive) -and (Get-Date) -lt $trayDeadline) {
       Start-Sleep -Milliseconds 200
