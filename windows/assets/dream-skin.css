@@ -1135,7 +1135,14 @@ html.codex-dream-skin .dream-eva-record-panel::after {
 html.codex-dream-skin.dream-eva-office-protocol {
   --dream-eva-violet: #7250a6;
   --dream-eva-warning: #e47d28;
+  --dream-eva-spear: #d63a4b;
+  --dream-eva-spear-highlight: #ff7654;
+  --dream-scrollbar-idle: color-mix(in oklab, var(--dream-accent) 34%, transparent);
+  --dream-scrollbar-active: color-mix(in oklab, var(--dream-accent) 76%, var(--dream-eva-violet));
   --color-token-menubar-selection-background: color-mix(in oklab, var(--dream-eva-violet) 22%, var(--dream-accent-soft)) !important;
+  --color-token-scrollbar-slider-background: var(--dream-scrollbar-idle) !important;
+  --color-token-scrollbar-slider-hover-background: var(--dream-scrollbar-active) !important;
+  --color-token-scrollbar-slider-active-background: var(--dream-accent) !important;
 }
 
 html.codex-dream-skin.dream-eva-office-protocol
@@ -1225,12 +1232,42 @@ html.codex-dream-skin.dream-eva-office-protocol .dream-task-status-row::after {
   clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
 }
 
+/* A compact Longinus-inspired silhouette replaces the plain phase rail. */
+html.codex-dream-skin.dream-eva-office-protocol .dream-eva-thread-rail::before {
+  z-index: 1;
+  inset-block: 1px;
+  inset-inline-start: -2px;
+  width: 15px;
+  background: linear-gradient(90deg,
+    #8f142a 0 28%, var(--dream-eva-spear) 28% 58%,
+    var(--dream-eva-spear-highlight) 58% 68%, #a91d32 68% 100%);
+  clip-path: polygon(
+    0 0, 50% 11%, 100% 0, 68% 23%, 61% 23%,
+    61% 77%, 77% 84%, 55% 100%, 45% 100%,
+    23% 84%, 39% 77%, 39% 23%, 32% 23%);
+  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--dream-eva-spear) 64%, transparent));
+  opacity: .92;
+}
+
 html.codex-dream-skin.dream-eva-office-protocol
-  aside.app-shell-left-panel .vertical-scroll-fade-mask::-webkit-scrollbar-thumb {
+  :is(.vertical-scroll-fade-mask, .thread-scroll-container) {
+  scrollbar-color: var(--dream-scrollbar-idle) transparent;
+}
+
+html.codex-dream-skin.dream-eva-office-protocol
+  :is(.vertical-scroll-fade-mask, .thread-scroll-container)::-webkit-scrollbar-thumb {
   border-radius: 1px;
   background:
-    repeating-linear-gradient(to bottom, var(--dream-accent) 0 7px, transparent 7px 9px),
-    color-mix(in oklab, var(--dream-eva-violet) 58%, var(--dream-text-muted));
+    repeating-linear-gradient(to bottom, var(--dream-scrollbar-idle) 0 7px, transparent 7px 9px),
+    color-mix(in oklab, var(--dream-eva-violet) 18%, transparent);
+  background-clip: padding-box;
+}
+
+html.codex-dream-skin.dream-eva-office-protocol
+  :is(.vertical-scroll-fade-mask, .thread-scroll-container)::-webkit-scrollbar-thumb:hover {
+  background:
+    repeating-linear-gradient(to bottom, var(--dream-scrollbar-active) 0 7px, transparent 7px 9px),
+    color-mix(in oklab, var(--dream-eva-violet) 34%, transparent);
   background-clip: padding-box;
 }
 @keyframes dream-status-pulse {

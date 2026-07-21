@@ -202,6 +202,10 @@ assert.match(template, /HEAVY_REFRESH_INTERVAL_MS = 900[\s\S]*if \(refreshHeavy\
   "Expensive document telemetry scans must be throttled during streaming updates.");
 assert.match(template, /SIDEBAR_REFRESH_INTERVAL_MS = 2000[\s\S]*now - lastSidebarSectionScanAt/,
   "Office sidebar label discovery must avoid rescanning every DOM mutation.");
+assert.match(css, /\.dream-eva-office-protocol \.dream-eva-thread-rail::before\s*\{[^}]*--dream-eva-spear[^}]*clip-path:\s*polygon/s,
+  "The office phase rail must use a compact Longinus-inspired spear silhouette.");
+assert.match(css, /--dream-scrollbar-idle:[^;]*34%[\s\S]*::-webkit-scrollbar-thumb:hover[\s\S]*--dream-scrollbar-active/s,
+  "Office scrollbars must stay muted until the user hovers them.");
 assert.match(template, /querySelectorAll\('\[role="dialog"\], \[data-testid\*="settings" i\]'\)/,
   "Quota discovery must remain limited to visible official settings surfaces.");
 
