@@ -799,3 +799,13 @@ Updated: 2026-07-31 14:29 HKT (Asia/Hong_Kong)
   `git diff --check`, and a second real-DOM read-only cardinality check pass.
   No installed runtime, Codex process, active theme, PR, issue, commit, or push
   was changed by this focused task.
+# EVA theme contract and current Codex layout refresh (2026-08-03)
+
+- Goal: update the external EVA theme pack for upstream v1.5.11's `colors` + non-empty Safe CSS contract and keep the derived Windows renderer's current Codex shell support.
+- Scope: `windows/assets/renderer-inject.js` in this derived engine; theme metadata, shared Safe CSS, installer, and documentation in the parent `CodexSkin` repository.
+- Branch/worktree: derived engine `main`; recoverable backup `codex/backup-before-upstream-merge-20260803-233055`; parent theme repository `main`.
+- Upstream: fetched `upstream/main`; `git merge upstream/main` reported already up to date at upstream `1c7a859` (v1.5.11). Derived head started at `030d408`.
+- Completed: checked both worktrees; preserved unrelated untracked `output/` diagnostics; confirmed current official theme contract and Safe CSS allowlist.
+- Completed: migrated all eight themes from legacy `palette` to explicit ten-color `colors`; added/copy-validated shared `theme.css`; changed the centered summer composition to official `safeArea: none`; taught the derived renderer to prefer `colors.accent` while retaining legacy `palette.accent`; added regression coverage for precedence.
+- Validation: all JSON parsed; Safe CSS passed `dreamskin-safe-css/1` (11 rules, 26 declarations); disposable installer produced 8 complete themes; all 8 payload checks reported explicit ten-color metadata and `safeCssStatus: validated`; renderer and payload-integrity tests passed; complete Windows `run-tests.ps1` passed outside the sandbox (the sandbox-only run reached `spawn EPERM` in the controlled child-process test).
+- Remaining: no live install/deploy was performed because this update intentionally stops at source and disposable-store validation.

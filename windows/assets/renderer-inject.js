@@ -94,9 +94,11 @@
     const hasNumber = (candidate) =>
       (typeof candidate === "number" || (typeof candidate === "string" && candidate.trim() !== "")) &&
       Number.isFinite(Number(candidate));
-    const requestedAccent = typeof config?.palette?.accent === "string"
-      ? config.palette.accent.trim()
-      : "";
+    const requestedAccent = typeof config?.colors?.accent === "string"
+      ? config.colors.accent.trim()
+      : typeof config?.palette?.accent === "string"
+        ? config.palette.accent.trim()
+        : "";
     const safeAccent = /^(?:#[\da-f]{3,8}|(?:rgb|hsl|oklch|oklab)\([^;{}]{1,96}\))$/i.test(requestedAccent)
       ? requestedAccent
       : null;

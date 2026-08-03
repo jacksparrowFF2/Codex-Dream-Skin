@@ -608,7 +608,8 @@ const configured = createFixture({
 });
 const configuredPayload = buildPayload({
   appearance: "light",
-  palette: { accent: "#d45a70" },
+  colors: { accent: "#d45a70" },
+  palette: { accent: "#00ff00" },
   art: { focusX: .15, focusY: .8, safeArea: "right", taskMode: "off" },
 });
 const configuredResult = vm.runInNewContext(configuredPayload, configured.context);
