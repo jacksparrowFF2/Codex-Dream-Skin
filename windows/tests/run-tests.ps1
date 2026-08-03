@@ -767,14 +767,14 @@ try {
   $css = Read-DreamSkinUtf8File -Path (Join-Path $Root 'assets\dream-skin.css')
   foreach ($requiredCss in @(
     'background-image: var(--dream-art)',
-    'main.main-surface > header.app-header-tint',
+    'main.dream-skin-shell > header.app-header-tint',
     '[class~="group/application-menu-top-bar"]',
     '.app-shell-main-content-top-fade',
     '.thread-scroll-container .bg-gradient-to-t.from-token-main-surface-primary',
     '--dream-immersive-composer',
     'background-position: var(--dream-art-position)',
     '.dream-home-utility',
-    ':is(.dream-task-ambient, .dream-task-banner):has(main.main-surface:not(.dream-home-shell))'
+    ':is(.dream-task-ambient, .dream-task-banner):has(main.dream-skin-shell:not(.dream-home-shell))'
   )) {
     if (-not $css.Contains($requiredCss)) { throw "Windows immersive CSS is missing: $requiredCss" }
   }

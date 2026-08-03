@@ -2,6 +2,8 @@
   const STATE_KEY = "__CODEX_DREAM_SKIN_STATE__";
   const STYLE_ID = "codex-dream-skin-style";
   const CHROME_ID = "codex-dream-skin-chrome";
+  const SHELL_CLASS = "dream-skin-shell";
+  const SHELL_SELECTOR = 'main:is(.main-surface, [data-app-shell-main-surface], [class*="_MainContentSurface_"])';
   const VERSION = __DREAM_SKIN_VERSION_JSON__;
   const STYLE_REVISION = __DREAM_SKIN_STYLE_REVISION_JSON__;
   const PAYLOAD_REVISION = __DREAM_SKIN_PAYLOAD_REVISION_JSON__;
@@ -320,6 +322,7 @@
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
     document.querySelectorAll(".dream-task").forEach((node) => node.classList.remove("dream-task"));
     document.querySelectorAll(".dream-home-shell").forEach((node) => node.classList.remove("dream-home-shell"));
+    document.querySelectorAll(`.${SHELL_CLASS}`).forEach((node) => node.classList.remove(SHELL_CLASS));
     document.querySelectorAll(`.${HOME_UTILITY_CLASS}`).forEach((node) => node.classList.remove(HOME_UTILITY_CLASS));
     document.querySelectorAll(`.${SECONDARY_DRAWER_CLASS}`).forEach((node) => node.classList.remove(SECONDARY_DRAWER_CLASS));
     document.querySelectorAll(`.${SUMMARY_PANEL_CLASS}`).forEach((node) => node.classList.remove(SUMMARY_PANEL_CLASS));
@@ -864,7 +867,7 @@
     // it, and clearing the skin there flashes native colors over the active theme.
     // True auxiliary windows (pets, blank targets) still have no main surface, so
     // they continue to clear residual skin state.
-    const shellMain = document.querySelector("main.main-surface") ||
+    const shellMain = document.querySelector(SHELL_SELECTOR) ||
       document.querySelector("main") ||
       document.querySelector('[role="main"]');
     if (!shellMain) {
@@ -872,6 +875,11 @@
       return;
     }
     const shellComposer = [...document.querySelectorAll(".composer-surface-chrome")].find(isVisible) || null;
+
+    for (const candidate of document.querySelectorAll(`.${SHELL_CLASS}`)) {
+      if (candidate !== shellMain) candidate.classList.remove(SHELL_CLASS);
+    }
+    shellMain.classList.add(SHELL_CLASS);
 
     root.classList.add("codex-dream-skin");
     root.setAttribute?.("data-dream-skin", "active");
@@ -1012,7 +1020,7 @@
     styleMode: "style",
     styleNode: document.getElementById(STYLE_ID),
     scope: resolveVerificationScope(
-      document.querySelector("main.main-surface") || document.querySelector("main") ||
+      document.querySelector(SHELL_SELECTOR) || document.querySelector("main") ||
         document.querySelector('[role="main"]'),
       document.querySelector('[role="main"]:has([data-testid="home-icon"])'),
     ),

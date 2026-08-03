@@ -32,7 +32,7 @@ for (const derivedModuleClass of [
 
 assert.doesNotMatch(
   css,
-  /main\.main-surface\s*>\s*header\.app-header-tint\s*\{[^}]*\b(?:position|z-index)\s*:/,
+  /main\.dream-skin-shell\s*>\s*header\.app-header-tint\s*\{[^}]*\b(?:position|z-index)\s*:/,
   "The skin must preserve Codex's native fixed header so the side-panel toggle remains reachable.",
 );
 assert.doesNotMatch(
@@ -149,7 +149,7 @@ assert.match(
 );
 assert.match(
   css,
-  /main\.main-surface aside > \[class~="cursor-col-resize"\]\[class~="left-0"\]\s*\{[^}]*left:\s*0\s*!important;[^}]*width:\s*8px\s*!important;[^}]*translate:\s*none\s*!important;/s,
+  /main\.dream-skin-shell aside > \[class~="cursor-col-resize"\]\[class~="left-0"\]\s*\{[^}]*left:\s*0\s*!important;[^}]*width:\s*8px\s*!important;[^}]*translate:\s*none\s*!important;/s,
   "The right workspace resize target must sit beyond the conversation scrollbar lane.",
 );
 assert.match(
@@ -308,8 +308,9 @@ function createFixture({
       nodes.set(node.id, node);
     },
   };
+  const shellClasses = new Set();
   const shellMain = {
-    classList: makeClassList(),
+    classList: makeClassList(shellClasses),
     getBoundingClientRect() {
       return { left: 290, top: 36, width: 990, height: 784 };
     },
@@ -395,7 +396,9 @@ function createFixture({
     createElement,
     getElementById(id) { return nodes.get(id) ?? null; },
     querySelector(selector) {
-      if (selector === "main.main-surface") return hasMain ? shellMain : null;
+      if (selector === 'main:is(.main-surface, [data-app-shell-main-surface], [class*="_MainContentSurface_"])') {
+        return hasMain ? shellMain : null;
+      }
       if (selector === "main") return hasMain ? shellMain : null;
       if (selector === "aside.app-shell-left-panel") return hasSidebar ? {} : null;
       if (selector === '[role="main"]:has([data-testid="home-icon"])') {
@@ -406,6 +409,9 @@ function createFixture({
     },
     querySelectorAll(selector) {
       if (selector === '[role="main"]') return hasMain ? [routeMain] : [];
+      if (selector === ".dream-skin-shell") {
+        return shellClasses.has("dream-skin-shell") ? [shellMain] : [];
+      }
       if (selector === ".composer-surface-chrome") return hasMain && composerPresent ? [composerNode] : [];
       if (selector === ".dream-task") return routeClasses.has("dream-task") ? [routeMain] : [];
       if (selector === ".dream-home-utility") {
@@ -495,6 +501,7 @@ function createFixture({
     observers,
     rootClasses,
     rootAttributes,
+    shellClasses,
     rootStyles,
     revokedUrls,
     routeClasses,
@@ -609,6 +616,7 @@ assert.equal(configuredResult.adaptive, true);
 assert.equal(configuredResult.version, "1.5.11");
 assert.equal(configuredResult.themeId, "custom");
 assert.equal(configuredResult.revision, "payload-fixture");
+assert.equal(configured.shellClasses.has("dream-skin-shell"), true);
 assert.equal(configured.rootAttributes.get("data-dream-skin"), "active");
 assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.styleMode, "style");
 assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.revision, "payload-fixture");
@@ -632,6 +640,7 @@ assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), true);
 assert.equal(configured.summaryClasses.has("dream-summary-panel"), true);
 assert.equal(configured.attachmentClasses.has("dream-attachment-panel"), true);
 assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
+assert.equal(configured.shellClasses.has("dream-skin-shell"), false);
 assert.equal(configured.rootAttributes.has("data-dream-skin"), false);
 assert.equal(configured.utilityClasses.has("dream-home-utility"), false);
 assert.equal(configured.utilityStyles.size, 0);

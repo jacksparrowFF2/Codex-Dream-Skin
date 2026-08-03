@@ -1228,6 +1228,7 @@ export async function verifySession(
           'dream-safe-left', 'dream-safe-center', 'dream-safe-right', 'dream-safe-none',
           'dream-task-ambient', 'dream-task-banner', 'dream-task-off',
           'dream-eva-office-protocol', 'dream-home', 'dream-task', 'dream-home-shell',
+          'dream-skin-shell',
           'dream-home-utility', 'dream-secondary-drawer', 'dream-summary-panel',
           'dream-attachment-panel', 'dream-task-status-row', 'dream-operation-panel',
           'dream-eva-thread-rail', 'dream-eva-record-panel', 'dream-eva-section-label',
