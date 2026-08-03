@@ -1231,13 +1231,10 @@ export async function verifySession(
           'dream-home-utility', 'dream-secondary-drawer', 'dream-summary-panel',
           'dream-attachment-panel', 'dream-task-status-row', 'dream-operation-panel',
           'dream-eva-thread-rail', 'dream-eva-record-panel', 'dream-eva-section-label',
-<<<<<<< HEAD
           'dream-composer-status', 'dream-context-meter', 'dream-usage-meter',
           'dream-magi-module', 'dream-magi-title', 'dream-magi-cores',
           'dream-magi-meters', 'dream-magi-meter', 'dream-magi-meter--context',
           'dream-magi-meter--usage',
-=======
->>>>>>> 66ff7be6223126f0a0dcffe92abcc5d4474e63b6
         ]);
         return [...document.querySelectorAll('[class]')].filter((node) =>
           [...node.classList].some((name) =>
