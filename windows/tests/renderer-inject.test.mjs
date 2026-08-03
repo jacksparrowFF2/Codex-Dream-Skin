@@ -9,9 +9,9 @@ const windowsRoot = path.resolve(here, "..");
 const template = await fs.readFile(path.join(windowsRoot, "assets", "renderer-inject.js"), "utf8");
 const css = await fs.readFile(path.join(windowsRoot, "assets", "dream-skin.css"), "utf8");
 const buildPayload = (config = {}) => template
-  .replace("__DREAM_CSS_JSON__", JSON.stringify(".fixture { color: blue; }"))
-  .replace("__DREAM_ART_JSON__", JSON.stringify("data:image/png;base64,AA=="))
-  .replace("__DREAM_THEME_JSON__", JSON.stringify(config));
+  .replace("__DREAM_SKIN_CSS_JSON__", JSON.stringify(".fixture { color: blue; }"))
+  .replace("__DREAM_SKIN_ART_JSON__", JSON.stringify("data:image/png;base64,AA=="))
+  .replace("__DREAM_SKIN_THEME_JSON__", JSON.stringify(config));
 const payload = buildPayload();
 
 assert.doesNotMatch(

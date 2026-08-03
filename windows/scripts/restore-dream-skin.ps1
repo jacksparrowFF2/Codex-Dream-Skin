@@ -14,7 +14,6 @@ $PortExplicit = $PSBoundParameters.ContainsKey('Port')
 . (Join-Path $PSScriptRoot 'common-windows.ps1')
 . (Join-Path $PSScriptRoot 'theme-windows.ps1')
 
-
 $operationLock = Enter-DreamSkinOperationLock
 try {
   if ($RestoreBaseTheme -and $RecoverConfigBackup) {
