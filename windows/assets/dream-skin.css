@@ -1060,28 +1060,28 @@ html.codex-dream-skin .dream-eva-thread-rail[data-dream-rail-runtime="run"]::aft
   animation: dream-status-pulse 1.35s ease-in-out infinite;
 }
 
-html.codex-dream-skin .dream-eva-thread-rail
+html.codex-dream-skin:not(.dream-eva-office-protocol) .dream-eva-thread-rail
   [data-thread-user-message-navigation-item-id] > span > span {
   height: 2px !important;
   border-radius: 2px;
   transition: width 150ms ease, opacity 150ms ease, background-color 150ms ease;
 }
 
-html.codex-dream-skin .dream-eva-thread-rail
+html.codex-dream-skin:not(.dream-eva-office-protocol) .dream-eva-thread-rail
   [data-dream-rail-state="complete"] > span > span {
   width: 12px !important;
   background: var(--dream-accent) !important;
   opacity: .48 !important;
 }
 
-html.codex-dream-skin .dream-eva-thread-rail
+html.codex-dream-skin:not(.dream-eva-office-protocol) .dream-eva-thread-rail
   [data-dream-rail-state="pending"] > span > span {
   width: 6px !important;
   background: var(--dream-text-muted) !important;
   opacity: .34 !important;
 }
 
-html.codex-dream-skin .dream-eva-thread-rail
+html.codex-dream-skin:not(.dream-eva-office-protocol) .dream-eva-thread-rail
   [data-dream-rail-state="current"] > span > span {
   width: 30px !important;
   background: var(--dream-accent) !important;
@@ -1136,7 +1136,6 @@ html.codex-dream-skin.dream-eva-office-protocol {
   --dream-eva-violet: #7250a6;
   --dream-eva-warning: #e47d28;
   --dream-eva-spear: #d63a4b;
-  --dream-eva-spear-highlight: #ff7654;
   --dream-scrollbar-idle: color-mix(in oklab, var(--dream-accent) 34%, transparent);
   --dream-scrollbar-active: color-mix(in oklab, var(--dream-accent) 76%, var(--dream-eva-violet));
   --color-token-menubar-selection-background: color-mix(in oklab, var(--dream-eva-violet) 22%, var(--dream-accent-soft)) !important;
@@ -1232,23 +1231,18 @@ html.codex-dream-skin.dream-eva-office-protocol .dream-task-status-row::after {
   clip-path: polygon(5px 0, 100% 0, 100% calc(100% - 5px), calc(100% - 5px) 100%, 0 100%, 0 5px);
 }
 
-/* A compact Longinus-inspired silhouette replaces the plain phase rail. */
-html.codex-dream-skin.dream-eva-office-protocol .dream-eva-thread-rail::before {
-  z-index: 1;
-  inset-block: 1px;
-  inset-inline-start: -2px;
-  width: 15px;
-  background: linear-gradient(90deg,
-    #8f142a 0 28%, var(--dream-eva-spear) 28% 58%,
-    var(--dream-eva-spear-highlight) 58% 68%, #a91d32 68% 100%);
-  clip-path: polygon(
-    0 0, 50% 11%, 100% 0, 68% 23%, 61% 23%,
-    61% 77%, 77% 84%, 55% 100%, 45% 100%,
-    23% 84%, 39% 77%, 39% 23%, 32% 23%);
-  filter: drop-shadow(0 0 4px color-mix(in oklab, var(--dream-eva-spear) 64%, transparent));
-  opacity: .92;
+/* Preserve Codex's native message-rail geometry; office mode changes only
+   the marker color and removes Dream Skin's extra rail and status badge. */
+html.codex-dream-skin.dream-eva-office-protocol .dream-eva-thread-rail::before,
+html.codex-dream-skin.dream-eva-office-protocol .dream-eva-thread-rail::after {
+  content: none;
+  display: none !important;
 }
 
+html.codex-dream-skin.dream-eva-office-protocol .dream-eva-thread-rail
+  [data-thread-user-message-navigation-item-id] > span > span {
+  background-color: var(--dream-eva-spear) !important;
+}
 html.codex-dream-skin.dream-eva-office-protocol
   :is(.vertical-scroll-fade-mask, .thread-scroll-container) {
   scrollbar-color: var(--dream-scrollbar-idle) transparent;

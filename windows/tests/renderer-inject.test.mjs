@@ -202,8 +202,14 @@ assert.match(template, /HEAVY_REFRESH_INTERVAL_MS = 900[\s\S]*if \(refreshHeavy\
   "Expensive document telemetry scans must be throttled during streaming updates.");
 assert.match(template, /SIDEBAR_REFRESH_INTERVAL_MS = 2000[\s\S]*now - lastSidebarSectionScanAt/,
   "Office sidebar label discovery must avoid rescanning every DOM mutation.");
-assert.match(css, /\.dream-eva-office-protocol \.dream-eva-thread-rail::before\s*\{[^}]*--dream-eva-spear[^}]*clip-path:\s*polygon/s,
-  "The office phase rail must use a compact Longinus-inspired spear silhouette.");
+assert.match(css, /html\.codex-dream-skin:not\(\.dream-eva-office-protocol\) \.dream-eva-thread-rail[\s\S]*height:\s*2px\s*!important;/s,
+  "Dream Skin marker geometry must exclude the office protocol.");
+assert.match(css, /\.dream-eva-office-protocol \.dream-eva-thread-rail[\s\S]*\[data-thread-user-message-navigation-item-id\][^}]*background-color:\s*var\(--dream-eva-spear\)\s*!important;/s,
+  "Office mode must recolor Codex's native phase markers without replacing them.");
+assert.doesNotMatch(css, /\.dream-eva-office-protocol \.dream-eva-thread-rail[\s\S]*\[data-thread-user-message-navigation-item-id\][^}]*(?:clip-path|\bwidth:|\bheight:)/s,
+  "Office mode must not override native marker geometry.");
+assert.match(css, /\.dream-eva-office-protocol \.dream-eva-thread-rail::before,[\s\S]*\.dream-eva-thread-rail::after\s*\{[^}]*content:\s*none;[^}]*display:\s*none\s*!important;/s,
+  "Office mode must hide the extra Dream Skin rail and status badge.");
 assert.match(css, /--dream-scrollbar-idle:[^;]*34%[\s\S]*::-webkit-scrollbar-thumb:hover[\s\S]*--dream-scrollbar-active/s,
   "Office scrollbars must stay muted until the user hovers them.");
 assert.match(template, /querySelectorAll\('\[role="dialog"\], \[data-testid\*="settings" i\]'\)/,
