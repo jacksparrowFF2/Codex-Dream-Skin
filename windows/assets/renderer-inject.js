@@ -2,6 +2,9 @@
   const STATE_KEY = "__CODEX_DREAM_SKIN_STATE__";
   const STYLE_ID = "codex-dream-skin-style";
   const CHROME_ID = "codex-dream-skin-chrome";
+  const VERSION = __DREAM_SKIN_VERSION_JSON__;
+  const STYLE_REVISION = __DREAM_SKIN_STYLE_REVISION_JSON__;
+  const PAYLOAD_REVISION = __DREAM_SKIN_PAYLOAD_REVISION_JSON__;
   const ROOT_CLASSES = [
     "codex-dream-skin",
     "dream-theme-light",
@@ -311,6 +314,7 @@
 
   const clearSkinDom = () => {
     const root = document.documentElement;
+    root?.removeAttribute?.("data-dream-skin");
     root?.classList.remove(...ROOT_CLASSES);
     for (const property of ROOT_PROPERTIES) root?.style.removeProperty(property);
     document.querySelectorAll(".dream-home").forEach((node) => node.classList.remove("dream-home"));
@@ -835,6 +839,21 @@
     }
   };
 
+  const resolveVerificationScope = (shellMain, home) => {
+    const settings = document.querySelector('[data-settings-panel-slug="general-settings"]') ||
+      document.querySelector('input[name="appearance-theme"]') ||
+      document.querySelector('[data-testid="theme-preview"]');
+    const sidebar = document.querySelector("aside.app-shell-left-panel");
+    if (settings && !sidebar) {
+      return { level: "L0", baseState: "settings", missingL1: [] };
+    }
+    return {
+      level: "L1",
+      baseState: home ? "home" : "thread",
+      missingL1: [!shellMain ? "shell-main" : null, !sidebar ? "left-panel" : null].filter(Boolean),
+    };
+  };
+
   const ensure = () => {
     if (window.__CODEX_DREAM_SKIN_DISABLED__) return;
     const root = document.documentElement;
@@ -855,6 +874,7 @@
     const shellComposer = [...document.querySelectorAll(".composer-surface-chrome")].find(isVisible) || null;
 
     root.classList.add("codex-dream-skin");
+    root.setAttribute?.("data-dream-skin", "active");
     applyProfile(root);
 
     let style = document.getElementById(STYLE_ID);
@@ -867,6 +887,7 @@
       style.textContent = cssText;
       style.dataset.dreamVersion = "3";
     }
+    style.dataset.dreamStyleRevision = STYLE_REVISION;
 
     const home = document.querySelector('[role="main"]:has([data-testid="home-icon"])');
     const mainCandidates = [...document.querySelectorAll('[role="main"]')];
@@ -939,6 +960,13 @@
       document.body.appendChild(chrome);
     }
     chrome.classList.toggle("dream-home-shell", Boolean(home));
+
+    const runtime = window[STATE_KEY];
+    if (runtime?.installToken === installToken) {
+      runtime.styleMode = "style";
+      runtime.styleNode = style;
+      runtime.scope = resolveVerificationScope(shellMain, home);
+    }
   };
 
   const cleanup = () => {
@@ -977,7 +1005,17 @@
   });
   const timer = setInterval(ensure, 5000);
   window[STATE_KEY] = {
-    ensure, cleanup, observer, timer, scheduler, resizeHandler, artUrl, profile, config, installToken, version: "1.2.0",
+    ensure, cleanup, observer, timer, scheduler, resizeHandler, artUrl, profile, config, installToken,
+    version: VERSION,
+    themeId: themeConfig?.id || "custom",
+    revision: PAYLOAD_REVISION,
+    styleMode: "style",
+    styleNode: document.getElementById(STYLE_ID),
+    scope: resolveVerificationScope(
+      document.querySelector("main.main-surface") || document.querySelector("main") ||
+        document.querySelector('[role="main"]'),
+      document.querySelector('[role="main"]:has([data-testid="home-icon"])'),
+    ),
   };
   ensure();
   analyzeArt().then((result) => {
@@ -987,5 +1025,11 @@
     state.profile = result;
     ensure();
   });
-  return { installed: true, version: "1.2.0", adaptive: true };
+  return {
+    installed: true,
+    version: VERSION,
+    themeId: themeConfig?.id || "custom",
+    revision: PAYLOAD_REVISION,
+    adaptive: true,
+  };
 })(__DREAM_SKIN_CSS_JSON__, __DREAM_SKIN_ART_JSON__, __DREAM_SKIN_THEME_JSON__)

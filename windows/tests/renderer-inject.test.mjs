@@ -11,7 +11,10 @@ const css = await fs.readFile(path.join(windowsRoot, "assets", "dream-skin.css")
 const buildPayload = (config = {}) => template
   .replace("__DREAM_SKIN_CSS_JSON__", JSON.stringify(".fixture { color: blue; }"))
   .replace("__DREAM_SKIN_ART_JSON__", JSON.stringify("data:image/png;base64,AA=="))
-  .replace("__DREAM_SKIN_THEME_JSON__", JSON.stringify(config));
+  .replace("__DREAM_SKIN_THEME_JSON__", JSON.stringify(config))
+  .replace("__DREAM_SKIN_VERSION_JSON__", JSON.stringify("1.5.11"))
+  .replace("__DREAM_SKIN_STYLE_REVISION_JSON__", JSON.stringify("style-fixture"))
+  .replace("__DREAM_SKIN_PAYLOAD_REVISION_JSON__", JSON.stringify("payload-fixture"));
 const payload = buildPayload();
 
 assert.doesNotMatch(
@@ -231,6 +234,7 @@ function createFixture({
 }) {
   const nodes = new Map();
   const rootClasses = new Set(staleSkin ? ["codex-dream-skin"] : []);
+  const rootAttributes = new Map();
   const rootStyles = new Map(staleSkin ? [["--dream-art", "url(\"blob:stale\")"]] : []);
   const revokedUrls = [];
   const observers = [];
@@ -271,7 +275,9 @@ function createFixture({
   root = {
     className: shellAppearance,
     classList: makeClassList(rootClasses, queueRootClassMutation),
-    getAttribute() { return null; },
+    getAttribute(name) { return rootAttributes.get(name) ?? null; },
+    setAttribute(name, value) { rootAttributes.set(name, String(value)); },
+    removeAttribute(name) { rootAttributes.delete(name); },
     style: {
       setProperty(key, value) { rootStyles.set(key, value); },
       removeProperty(key) { rootStyles.delete(key); },
@@ -475,6 +481,7 @@ function createFixture({
     nodes,
     observers,
     rootClasses,
+    rootAttributes,
     rootStyles,
     revokedUrls,
     routeClasses,
@@ -586,6 +593,16 @@ const configuredPayload = buildPayload({
 });
 const configuredResult = vm.runInNewContext(configuredPayload, configured.context);
 assert.equal(configuredResult.adaptive, true);
+assert.equal(configuredResult.version, "1.5.11");
+assert.equal(configuredResult.themeId, "custom");
+assert.equal(configuredResult.revision, "payload-fixture");
+assert.equal(configured.rootAttributes.get("data-dream-skin"), "active");
+assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.styleMode, "style");
+assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.revision, "payload-fixture");
+assert.deepEqual(
+  [...configured.context.window.__CODEX_DREAM_SKIN_STATE__.scope.missingL1],
+  [],
+);
 assert.equal(configured.rootClasses.has("dream-theme-light"), true);
 assert.equal(configured.rootClasses.has("dream-theme-dark"), false);
 assert.equal(configured.rootClasses.has("dream-focus-left"), true);
@@ -602,6 +619,7 @@ assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), true);
 assert.equal(configured.summaryClasses.has("dream-summary-panel"), true);
 assert.equal(configured.attachmentClasses.has("dream-attachment-panel"), true);
 assert.equal(configured.context.window.__CODEX_DREAM_SKIN_STATE__.cleanup(), true);
+assert.equal(configured.rootAttributes.has("data-dream-skin"), false);
 assert.equal(configured.utilityClasses.has("dream-home-utility"), false);
 assert.equal(configured.utilityStyles.size, 0);
 assert.equal(configured.drawerClasses.has("dream-secondary-drawer"), false);
