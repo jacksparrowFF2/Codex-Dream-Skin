@@ -32,8 +32,8 @@ for (const derivedModuleClass of [
 
 assert.doesNotMatch(
   css,
-  /main\.dream-skin-shell\s*>\s*header\.app-header-tint\s*\{[^}]*\b(?:position|z-index)\s*:/,
-  "The skin must preserve Codex's native fixed header so the side-panel toggle remains reachable.",
+  /main\.dream-skin-shell\s*>\s*header\s*\{[^}]*\b(?:position|z-index)\s*:/,
+  "The skin must preserve every native fixed header regardless of Codex's generated header class so the side-panel toggle remains reachable.",
 );
 assert.doesNotMatch(
   css,
@@ -42,8 +42,8 @@ assert.doesNotMatch(
 );
 assert.match(
   css,
-  /\.dream-task\s*>\s*:not\(header\.app-header-tint\)\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s,
-  "Task content may be layered above artwork only when the native header is excluded.",
+  /\.dream-task\s*>\s*:not\(header\)\s*\{[^}]*position:\s*relative;[^}]*z-index:\s*1;/s,
+  "Task content may be layered above artwork only when every direct native header is excluded.",
 );
 
 assert.doesNotMatch(

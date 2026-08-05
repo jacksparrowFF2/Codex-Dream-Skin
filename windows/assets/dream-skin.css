@@ -315,11 +315,19 @@ html.codex-dream-skin main.dream-skin-shell {
   box-shadow: inset 0 1px color-mix(in oklab, var(--dream-surface-raised) 72%, transparent) !important;
 }
 
-html.codex-dream-skin main.dream-skin-shell > header.app-header-tint {
-  /* Preserve Codex's native fixed header geometry and side-panel controls. */
+html.codex-dream-skin main.dream-skin-shell > header {
+  /* Preserve Codex's native fixed header geometry and side-panel controls.
+     Its box extends 36px into the leading control gutter, so paint the bottom
+     divider separately instead of letting the native border cross that edge. */
+  --dream-header-leading-overhang: 36px;
   color: var(--dream-text) !important;
-  background: color-mix(in oklab, var(--dream-surface) 94%, transparent) !important;
+  background-color: color-mix(in oklab, var(--dream-surface) 94%, transparent) !important;
+  background-image: linear-gradient(var(--dream-line-soft), var(--dream-line-soft)) !important;
+  background-position: right bottom !important;
+  background-repeat: no-repeat !important;
+  background-size: calc(100% - var(--dream-header-leading-overhang)) 1px !important;
   border-color: var(--dream-line-soft) !important;
+  border-bottom-color: transparent !important;
   backdrop-filter: blur(12px) saturate(1.05) !important;
 }
 
@@ -469,7 +477,7 @@ html.codex-dream-skin.dream-task-off .dream-task::before {
   display: none;
 }
 
-html.codex-dream-skin .dream-task > :not(header.app-header-tint) {
+html.codex-dream-skin .dream-task > :not(header) {
   position: relative;
   z-index: 1;
 }
@@ -640,7 +648,7 @@ html.codex-dream-skin.dream-art-wide:is(.dream-task-ambient, .dream-task-banner)
   content: none !important;
 }
 
-html.codex-dream-skin.dream-art-wide main.dream-skin-shell > header.app-header-tint {
+html.codex-dream-skin.dream-art-wide main.dream-skin-shell > header {
   background: transparent !important;
   border-bottom: 0 !important;
   box-shadow: none !important;
@@ -649,7 +657,7 @@ html.codex-dream-skin.dream-art-wide main.dream-skin-shell > header.app-header-t
     0 0 8px color-mix(in oklab, var(--dream-canvas) 58%, transparent) !important;
 }
 
-html.codex-dream-skin.dream-art-wide main.dream-skin-shell > header.app-header-tint svg {
+html.codex-dream-skin.dream-art-wide main.dream-skin-shell > header svg {
   filter: drop-shadow(0 1px 2px color-mix(in oklab, var(--dream-canvas) 72%, transparent));
 }
 
