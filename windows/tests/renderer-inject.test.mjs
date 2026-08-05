@@ -32,8 +32,13 @@ for (const derivedModuleClass of [
 
 assert.doesNotMatch(
   css,
-  /main\.dream-skin-shell\s*>\s*header\s*\{[^}]*\b(?:position|z-index)\s*:/,
+  /main\.dream-skin-shell\s*>\s*header\s*\{[^}]*(?:^|;)\s*(?:position|z-index)\s*:/ms,
   "The skin must preserve every native fixed header regardless of Codex's generated header class so the side-panel toggle remains reachable.",
+);
+assert.match(
+  css,
+  /main\.dream-skin-shell\s*>\s*header\s*\{[^}]*--dream-header-leading-overhang:\s*36px;[^}]*background-size:\s*calc\(100% - var\(--dream-header-leading-overhang\)\) 1px\s*!important;[^}]*border-bottom-color:\s*transparent\s*!important;/s,
+  "The header divider must begin after the native leading control gutter instead of crossing the main-content boundary.",
 );
 assert.doesNotMatch(
   css,
