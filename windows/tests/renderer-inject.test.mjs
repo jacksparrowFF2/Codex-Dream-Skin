@@ -83,12 +83,12 @@ assert.match(
 );
 assert.match(
   css,
-  /\.dream-home-utility button,\s*html\.codex-dream-skin \.composer-surface-chrome button:not\(\[class~="bg-token-foreground"\]\)\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;/s,
+  /\.dream-home-utility button,\s*html\.codex-dream-skin :is\(\.composer-surface-chrome, \[data-composer-surface-variant\]\[data-composer-layout\]\) button:not\(\[class~="bg-token-foreground"\]\)\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;/s,
   "Composer controls must not inherit low-opacity native foreground tokens.",
 );
 assert.match(
   css,
-  /\.composer-surface-chrome p\.placeholder::after\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;[^}]*opacity:\s*1\s*!important;/s,
+  /:is\(\.composer-surface-chrome, \[data-composer-surface-variant\]\[data-composer-layout\]\) p\.placeholder::after\s*\{[^}]*color:\s*var\(--dream-text-muted\)\s*!important;[^}]*opacity:\s*1\s*!important;/s,
   "Composer placeholder text must retain explicit readable contrast.",
 );
 assert.match(
@@ -171,6 +171,15 @@ assert.match(css, /\.dream-art-fit-height[\s\S]*body\s*\{[^}]*background-size:\s
   "Short wide windows must fit character wallpapers by height instead of cropping them.");
 assert.match(template, /viewportAspect > profile\.aspect \+ \.02/,
   "Height-fit mode must respond to the actual wallpaper and viewport aspect ratios.");
+assert.match(template,
+  /COMPOSER_SELECTOR = ':is\(\.composer-surface-chrome, \[data-composer-surface-variant\]\[data-composer-layout\]\)'/,
+  "The derived renderer must recognize the semantic composer surface in Codex 26.810.");
+assert.match(template,
+  /SUMMARY_PANEL_SELECTOR = ':is\(\[class~="rounded-3xl"\]\[class~="bg-token-dropdown-background"\], \[class~="rounded-3xl"\]\[class~="bg-surface-elevated-secondary"\]\)'/,
+  "The derived renderer must retain the MAGI module in the Codex 26.810 environment panel.");
+assert.match(template,
+  /SUMMARY_PANEL_ITEM_SELECTOR = ':is\(\[class~="group\/summary-panel-item"\], \[data-slot="thread-summary-panel-item-button"\]\)'/,
+  "The environment panel must be validated by its current semantic item slot.");
 assert.match(template, /addEventListener\?\.\("resize", resizeHandler\)/,
   "Responsive wallpaper fitting must update immediately on resize.");
 assert.match(template, /removeEventListener\?\.\("resize", state\.resizeHandler\)/,
@@ -344,13 +353,15 @@ function createFixture({
   const summaryNode = {
     classList: makeClassList(summaryClasses),
     querySelector(selector) {
-      return selector === '[class~="group/summary-panel-item"]' ? {} : null;
+      return selector === ':is([class~="group/summary-panel-item"], [data-slot="thread-summary-panel-item-button"])'
+        ? {} : null;
     },
   };
   const routeMain = {
     classList: makeClassList(routeClasses),
     querySelector(selector) {
-      return selector === ".composer-surface-chrome" && utilityPresent ? composerNode : null;
+      return selector === ':is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout])' && utilityPresent
+        ? composerNode : null;
     },
     querySelectorAll(selector) {
       if (selector === '[class*="_homeUtilityBar_"]' && utilityPresent) return [utilityNode];
@@ -417,7 +428,9 @@ function createFixture({
       if (selector === ".dream-skin-shell") {
         return shellClasses.has("dream-skin-shell") ? [shellMain] : [];
       }
-      if (selector === ".composer-surface-chrome") return hasMain && composerPresent ? [composerNode] : [];
+      if (selector === ':is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout])') {
+        return hasMain && composerPresent ? [composerNode] : [];
+      }
       if (selector === ".dream-task") return routeClasses.has("dream-task") ? [routeMain] : [];
       if (selector === ".dream-home-utility") {
         return utilityClasses.has("dream-home-utility") ? [utilityNode] : [];
@@ -425,7 +438,7 @@ function createFixture({
       if (selector === '[class~="absolute"][class~="top-0"][class~="bottom-0"][class~="left-0"][class~="border-l"][class~="bg-token-main-surface-primary"]') {
         return secondaryPanelsPresent ? [drawerNode] : [];
       }
-      if (selector === '[class~="rounded-3xl"][class~="bg-token-dropdown-background"]') {
+      if (selector === ':is([class~="rounded-3xl"][class~="bg-token-dropdown-background"], [class~="rounded-3xl"][class~="bg-surface-elevated-secondary"])') {
         return secondaryPanelsPresent ? [summaryNode] : [];
       }
       if (selector === ".dream-secondary-drawer") {

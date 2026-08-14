@@ -516,7 +516,7 @@ html.codex-dream-skin .dream-home {
   background: var(--dream-accent-soft) !important;
 }
 
-html.codex-dream-skin .composer-surface-chrome {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) {
   color: var(--dream-text) !important;
   border: 1px solid var(--dream-line) !important;
   border-radius: 18px !important;
@@ -532,22 +532,22 @@ html.codex-dream-skin .ProseMirror {
 
 html.codex-dream-skin .dream-home-utility,
 html.codex-dream-skin .dream-home-utility button,
-html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]) {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) button:not([class~="bg-token-foreground"]) {
   color: var(--dream-text-muted) !important;
 }
 
 html.codex-dream-skin .dream-home-utility button *,
-html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]) * {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) button:not([class~="bg-token-foreground"]) * {
   color: currentColor !important;
 }
 
 html.codex-dream-skin .dream-home-utility button:hover,
-html.codex-dream-skin .composer-surface-chrome button:not([class~="bg-token-foreground"]):hover {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) button:not([class~="bg-token-foreground"]):hover {
   color: var(--dream-text) !important;
   background: var(--dream-accent-soft) !important;
 }
 
-html.codex-dream-skin .composer-surface-chrome p.placeholder::after {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) p.placeholder::after {
   color: var(--dream-text-muted) !important;
   opacity: 1 !important;
 }
@@ -681,7 +681,7 @@ html.codex-dream-skin.dream-theme-light.dream-art-wide main.dream-skin-shell.dre
 
 /* The composer owns exactly one solid readability surface. Native bottom
    gradients are cleared below so the control never appears double stacked. */
-html.codex-dream-skin.dream-art-wide .composer-surface-chrome {
+html.codex-dream-skin.dream-art-wide :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) {
   color: var(--dream-text) !important;
   background: var(--dream-immersive-composer) !important;
   border: 0 !important;
@@ -690,7 +690,7 @@ html.codex-dream-skin.dream-art-wide .composer-surface-chrome {
   backdrop-filter: none !important;
 }
 
-html.codex-dream-skin.dream-art-wide .composer-surface-chrome::before {
+html.codex-dream-skin.dream-art-wide :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout])::before {
   content: none !important;
 }
 
@@ -912,7 +912,7 @@ html.codex-dream-skin .dream-magi-meter--context > i > u {
   width: var(--dream-context-fill, 0%);
 }
 
-html.codex-dream-skin .composer-surface-chrome {
+html.codex-dream-skin :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) {
   position: relative;
 }
 

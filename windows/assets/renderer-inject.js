@@ -4,6 +4,9 @@
   const CHROME_ID = "codex-dream-skin-chrome";
   const SHELL_CLASS = "dream-skin-shell";
   const SHELL_SELECTOR = 'main:is(.main-surface, [data-app-shell-main-surface], [class*="_MainContentSurface_"])';
+  const COMPOSER_SELECTOR = ':is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout])';
+  const SUMMARY_PANEL_SELECTOR = ':is([class~="rounded-3xl"][class~="bg-token-dropdown-background"], [class~="rounded-3xl"][class~="bg-surface-elevated-secondary"])';
+  const SUMMARY_PANEL_ITEM_SELECTOR = ':is([class~="group/summary-panel-item"], [data-slot="thread-summary-panel-item-button"])';
   const VERSION = __DREAM_SKIN_VERSION_JSON__;
   const STYLE_REVISION = __DREAM_SKIN_STYLE_REVISION_JSON__;
   const PAYLOAD_REVISION = __DREAM_SKIN_PAYLOAD_REVISION_JSON__;
@@ -420,7 +423,7 @@
       .some(isVisible);
     if (running) return "run";
     const approvalButtons = [...document.querySelectorAll("button")]
-      .filter((button) => isVisible(button) && !button.closest?.(".composer-surface-chrome"));
+      .filter((button) => isVisible(button) && !button.closest?.(COMPOSER_SELECTOR));
     if (approvalButtons.some((button) => /^(?:批准|同意|允许|运行|approve|allow)(?:\s|$)/i
       .test((button.textContent || "").trim()))) return "hold";
     return "ready";
@@ -876,7 +879,7 @@
       clearSkinDom();
       return;
     }
-    const shellComposer = [...document.querySelectorAll(".composer-surface-chrome")].find(isVisible) || null;
+    const shellComposer = [...document.querySelectorAll(COMPOSER_SELECTOR)].find(isVisible) || null;
 
     for (const candidate of document.querySelectorAll(`.${SHELL_CLASS}`)) {
       if (candidate !== shellMain) candidate.classList.remove(SHELL_CLASS);
@@ -922,9 +925,8 @@
     }
     for (const candidate of secondaryDrawers) candidate.classList.add(SECONDARY_DRAWER_CLASS);
 
-    const summaryPanels = new Set([...document.querySelectorAll(
-      '[class~="rounded-3xl"][class~="bg-token-dropdown-background"]',
-    )].filter((candidate) => candidate.querySelector('[class~="group/summary-panel-item"]')));
+    const summaryPanels = new Set([...document.querySelectorAll(SUMMARY_PANEL_SELECTOR)]
+      .filter((candidate) => candidate.querySelector(SUMMARY_PANEL_ITEM_SELECTOR)));
     for (const candidate of document.querySelectorAll(`.${SUMMARY_PANEL_CLASS}`)) {
       if (!summaryPanels.has(candidate)) candidate.classList.remove(SUMMARY_PANEL_CLASS);
     }
