@@ -13,11 +13,13 @@ const injector = await fs.readFile(path.join(windowsRoot, "scripts", "injector.m
 for (const token of [
   "preset-eva-", "__CODEX_EVA_COMPAT_STATE__", "codex-dream-magi-module",
   "dream-operation-panel", "dream-eva-thread-rail", "preset-eva-office-protocol",
+  "rate-limit-status", "latestTokenUsageInfo", "codex-dream-official-status-v1",
 ]) assert.match(source, new RegExp(token.replace(/[.*+?^${}()|[\]\\]/g, "\\$&")));
 for (const token of [
   '[data-eva-compat="active"]', ".dream-magi-module", ".dream-operation-panel",
   ".dream-eva-thread-rail", '[data-eva-office="active"]',
   "grid-template-columns: repeat(3, minmax(0, 1fr))",
+  "--dream-accent: var(--ds-green)", "content: none !important",
 ]) assert.ok(css.includes(token), `missing EVA CSS contract: ${token}`);
 for (const token of ["dream-usage-meter", "dream-context-meter", 'data-field="pilot"']) {
   assert.ok(source.includes(token), `missing legacy EVA component contract: ${token}`);

@@ -45,6 +45,12 @@
 - [diagnosed] The tray implementation is healthy; the deployment helper's
   process lifetime had terminated the tray child. Start it independently via
   the installed tray shortcut after redeployment.
+- [screenshot correction] Disabled v1.5.14's task-header theme labels for EVA
+  because they overlap the native task title and window controls. Added an
+  explicit upstream-to-legacy color-variable bridge for the MAGI panel.
+- [telemetry] Restored the derived engine's automatic `rate-limit-status` and
+  conversation-token readers, live status-card parsing, and 24-hour session
+  cache so quota/context meters no longer rely on visible page text alone.
 
 ## Issue #352 fix and v1.5.14 release (2026-08-12)
 

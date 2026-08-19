@@ -1,5 +1,27 @@
 /* Windows-only EVA/MAGI compatibility layer. Preserve the derived engine's
    original telemetry presentation while targeting the upstream v1.5.14 DOM. */
+html[data-eva-compat="active"] {
+  --dream-canvas: var(--ds-bg);
+  --dream-surface-raised: var(--ds-panel-2);
+  --dream-accent: var(--ds-green);
+  --dream-accent-secondary: var(--ds-secondary);
+  --dream-text: var(--ds-text);
+  --dream-text-muted: var(--ds-muted);
+  --dream-line: var(--ds-line);
+}
+
+/* v1.5.14 puts decorative theme labels into the native 46px task header.
+   Codex now reserves that lane for the task title and window/sidebar buttons,
+   so EVA keeps the old engine behavior and leaves the native header untouched. */
+html[data-eva-compat="active"]
+  main:is(.main-surface, [data-app-shell-main-surface], [class*="_MainContentSurface_"]):not(:has([role="main"]))
+  > header:is(.app-header-tint, [data-app-shell-header-edge-scroll], [class*="_Header_"])::before,
+html[data-eva-compat="active"]
+  main:is(.main-surface, [data-app-shell-main-surface], [class*="_MainContentSurface_"]):not(:has([role="main"]))
+  > header:is(.app-header-tint, [data-app-shell-header-edge-scroll], [class*="_Header_"])::after {
+  content: none !important;
+}
+
 html[data-eva-compat="active"] .dream-magi-module,
 html[data-eva-compat="active"] .dream-composer-status,
 html[data-eva-compat="active"] .dream-operation-panel::before,
