@@ -30,8 +30,21 @@
   `safeCssStatus: validated`.
 - [complete locally] The merged implementation and staged diff were reviewed;
   no unresolved conflict markers or diff-check failures remain.
-- [not done] No live deployment, visual smoke test, push, PR, tag, or Release
-  has occurred. Deployment still requires explicit installation of this branch.
+- [deployed] The user authorized local installation. Live verification passed
+  for `preset-eva-asuka-overdrive`; no push, PR, tag, or Release has occurred.
+
+### Post-deployment fidelity correction (2026-08-19)
+
+- [fixed] Restored the derived engine's original flat MAGI presentation: three
+  core columns, original typography, spacing, meters, and composer telemetry.
+  The compatibility layer still targets the upstream v1.5.14 composer and
+  summary-panel selectors.
+- [verified] The EVA contract now asserts the legacy component class names and
+  three-column layout. Payload compilation and the complete Windows regression
+  suite pass.
+- [diagnosed] The tray implementation is healthy; the deployment helper's
+  process lifetime had terminated the tray child. Start it independently via
+  the installed tray shortcut after redeployment.
 
 ## Issue #352 fix and v1.5.14 release (2026-08-12)
 

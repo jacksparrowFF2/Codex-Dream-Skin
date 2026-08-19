@@ -1,174 +1,253 @@
-/* Windows-only EVA/MAGI compatibility layer. */
-html[data-eva-compat="active"] {
-  --dream-eva-green: var(--ds-theme-color-accent, #78ff45);
-  --dream-eva-amber: var(--ds-theme-color-secondary, #f4b44f);
-  --dream-eva-red: #ef4f4f;
-  --dream-eva-panel: color-mix(in oklab, var(--ds-theme-color-panel, #101820) 90%, transparent);
+/* Windows-only EVA/MAGI compatibility layer. Preserve the derived engine's
+   original telemetry presentation while targeting the upstream v1.5.14 DOM. */
+html[data-eva-compat="active"] .dream-magi-module,
+html[data-eva-compat="active"] .dream-composer-status,
+html[data-eva-compat="active"] .dream-operation-panel::before,
+html[data-eva-compat="active"] .dream-eva-thread-rail::before,
+html[data-eva-compat="active"] .dream-eva-thread-rail::after {
+  pointer-events: none !important;
+  user-select: none !important;
 }
 
 html[data-eva-compat="active"] .dream-magi-module {
-  position: relative;
-  display: grid;
-  gap: 10px;
-  margin: 0 0 12px;
-  padding: 13px;
-  color: var(--ds-theme-color-text);
-  background: linear-gradient(145deg,
-    color-mix(in oklab, var(--dream-eva-panel) 94%, var(--dream-eva-green) 6%),
-    var(--dream-eva-panel));
-  border: 1px solid color-mix(in oklab, var(--dream-eva-green) 42%, transparent);
-  border-radius: 14px;
-  box-shadow: inset 0 1px color-mix(in oklab, white 8%, transparent),
-    0 12px 28px color-mix(in oklab, black 22%, transparent);
-  pointer-events: none;
+  flex: none;
+  margin: 0;
+  padding: 12px 14px 11px;
+  color: var(--dream-text);
+  border: 0;
+  border-bottom: 1px solid var(--dream-line);
+  border-radius: 0;
+  background:
+    linear-gradient(115deg, color-mix(in oklab, var(--dream-accent) 9%, transparent), transparent 42%),
+    color-mix(in oklab, var(--dream-surface-raised) 72%, transparent);
+  box-shadow: none;
+  font-family: "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
   overflow: hidden;
 }
 
-html[data-eva-compat="active"] .dream-magi-module::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: repeating-linear-gradient(0deg, transparent 0 5px,
-    color-mix(in oklab, var(--dream-eva-green) 8%, transparent) 6px);
-  pointer-events: none;
-}
-
 html[data-eva-compat="active"] .dream-magi-title,
-html[data-eva-compat="active"] .dream-magi-cores,
-html[data-eva-compat="active"] .dream-magi-meters { position: relative; z-index: 1; }
-
-html[data-eva-compat="active"] .dream-magi-title {
+html[data-eva-compat="active"] .dream-magi-meter > span {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   justify-content: space-between;
   gap: 8px;
-  white-space: nowrap;
+  color: var(--dream-text-muted);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.2;
+  text-transform: uppercase;
 }
+
+html[data-eva-compat="active"] .dream-magi-title > * { white-space: nowrap; }
 
 html[data-eva-compat="active"] .dream-magi-title strong {
-  color: var(--dream-eva-green);
-  font: 800 14px/1.1 ui-monospace, "Cascadia Mono", monospace;
-  letter-spacing: .08em;
+  color: var(--dream-accent);
+  font-size: 14px;
+  letter-spacing: .18em;
 }
 
-html[data-eva-compat="active"] .dream-magi-title span {
-  color: var(--ds-theme-color-muted);
-  font: 700 8px/1.1 ui-monospace, monospace;
-  letter-spacing: .05em;
-}
-
-html[data-eva-compat="active"] .dream-magi-cores { display: grid; gap: 6px; }
-html[data-eva-compat="active"] .dream-magi-cores > span {
+html[data-eva-compat="active"] .dream-magi-cores {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 8px auto;
-  align-items: center;
-  gap: 8px;
-  min-height: 22px;
-  padding: 4px 7px;
-  border-inline-start: 3px solid var(--dream-eva-green);
-  background: color-mix(in oklab, var(--dream-eva-green) 8%, transparent);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 6px;
+  margin-top: 10px;
+}
+
+html[data-eva-compat="active"] .dream-magi-cores > span {
+  min-width: 0;
+  display: grid;
+  grid-template-columns: 6px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  column-gap: 4px;
+  padding: 7px 4px 6px;
+  border: 1px solid color-mix(in oklab, var(--dream-line) 78%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--dream-canvas) 34%, transparent);
+}
+
+html[data-eva-compat="active"] .dream-magi-cores > span > i {
+  grid-row: 1 / 3;
+  align-self: center;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--dream-text-muted);
+  box-shadow: 0 0 6px currentColor;
 }
 
 html[data-eva-compat="active"] .dream-magi-cores b,
 html[data-eva-compat="active"] .dream-magi-cores em {
-  font: 700 9px/1 ui-monospace, monospace;
-  letter-spacing: .04em;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   font-style: normal;
+  line-height: 1.05;
 }
 
-html[data-eva-compat="active"] .dream-magi-cores i {
-  width: 7px;
-  height: 7px;
-  border-radius: 50%;
-  background: var(--dream-eva-green);
-  box-shadow: 0 0 8px var(--dream-eva-green);
+html[data-eva-compat="active"] .dream-magi-cores b {
+  color: var(--dream-text-muted);
+  font-size: 9px;
+  letter-spacing: 0;
 }
 
-html[data-eva-compat="active"] [data-state="warn"] { --dream-eva-state: var(--dream-eva-amber); }
-html[data-eva-compat="active"] [data-state="alert"] { --dream-eva-state: var(--dream-eva-red); }
-html[data-eva-compat="active"] [data-state="unknown"] { --dream-eva-state: var(--ds-theme-color-muted); }
-html[data-eva-compat="active"] .dream-magi-cores > span[data-state] {
-  border-inline-start-color: var(--dream-eva-state, var(--dream-eva-green));
-}
-html[data-eva-compat="active"] .dream-magi-cores > span[data-state] i {
-  background: var(--dream-eva-state, var(--dream-eva-green));
-  box-shadow: 0 0 8px var(--dream-eva-state, var(--dream-eva-green));
+html[data-eva-compat="active"] .dream-magi-cores em {
+  margin-top: 3px;
+  color: var(--dream-text);
+  font-size: 12px;
+  font-weight: 800;
 }
 
-html[data-eva-compat="active"] .dream-magi-meters { display: grid; gap: 9px; }
-html[data-eva-compat="active"] .dream-magi-meter { display: grid; gap: 4px; }
-html[data-eva-compat="active"] .dream-magi-meter > span {
-  display: flex;
-  justify-content: space-between;
-  gap: 8px;
-  font: 700 9px/1.1 ui-monospace, monospace;
+html[data-eva-compat="active"] .dream-magi-cores > span[data-state="ok"] > i {
+  color: #62e39a;
+  background: currentColor;
 }
+
+html[data-eva-compat="active"] .dream-magi-cores > span:is([data-state="warn"], [data-state="unknown"]) > i {
+  color: #efbe55;
+  background: currentColor;
+}
+
+html[data-eva-compat="active"] .dream-magi-cores > span[data-state="alert"] > i {
+  color: #ff6b6b;
+  background: currentColor;
+}
+
+html[data-eva-compat="active"] .dream-magi-meters {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 10px;
+  margin-top: 11px;
+}
+
+html[data-eva-compat="active"] .dream-magi-meter { min-width: 0; }
+
+html[data-eva-compat="active"] .dream-magi-meter strong {
+  color: var(--dream-text);
+  font-size: 16px;
+  letter-spacing: .02em;
+}
+
 html[data-eva-compat="active"] .dream-magi-meter > em {
-  color: var(--ds-theme-color-muted);
-  font: 600 8px/1 ui-monospace, monospace;
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  color: var(--dream-text-muted);
+  font-size: 10px;
   font-style: normal;
+  letter-spacing: .04em;
+  line-height: 1;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
+
 html[data-eva-compat="active"] .dream-magi-meter > i {
   position: relative;
   display: block;
   height: 5px;
-  border-radius: 99px;
-  background: color-mix(in oklab, var(--ds-theme-color-muted) 22%, transparent);
+  margin-top: 6px;
   overflow: hidden;
+  border-radius: 0;
+  background: color-mix(in oklab, var(--dream-text-muted) 20%, transparent);
 }
+
 html[data-eva-compat="active"] .dream-magi-meter > i::after,
 html[data-eva-compat="active"] .dream-magi-meter > i > u {
   content: "";
+  position: absolute;
+  inset-block: 0;
+  inset-inline-start: 0;
   display: block;
-  height: 100%;
-  width: var(--dream-usage-fill, 0%);
-  background: var(--dream-eva-state, var(--dream-eva-green));
-  box-shadow: 0 0 9px var(--dream-eva-state, var(--dream-eva-green));
+  background: var(--dream-accent);
+  box-shadow: 0 0 7px color-mix(in oklab, var(--dream-accent) 72%, transparent);
   text-decoration: none;
 }
-html[data-eva-compat="active"] .dream-magi-meter--context > i::after { display: none; }
+
+html[data-eva-compat="active"] .dream-magi-meter--usage > i::after {
+  width: var(--dream-usage-fill, 0%);
+}
+
 html[data-eva-compat="active"] .dream-magi-meter--context > i > u {
-  width: var(--dream-context-fill, 1%);
+  width: var(--dream-context-fill, 0%);
+}
+
+html[data-eva-compat="active"] :is(.composer-surface-chrome, [data-composer-surface-variant][data-composer-layout]) {
+  position: relative;
 }
 
 html[data-eva-compat="active"] .dream-composer-status {
+  position: absolute;
+  z-index: 2;
+  inset-inline-start: 50%;
+  inset-block-end: 11px;
   display: flex;
   align-items: center;
-  justify-content: center;
   gap: 7px;
-  min-height: 16px;
-  color: var(--ds-theme-color-muted);
-  font: 700 8px/1 ui-monospace, monospace;
-  letter-spacing: .05em;
-  pointer-events: none;
-}
-html[data-eva-compat="active"] .dream-composer-status i {
-  width: 3px;
-  height: 3px;
-  border-radius: 50%;
-  background: var(--dream-eva-green);
+  max-width: 44%;
+  transform: translateX(-50%);
+  color: var(--dream-text-muted);
+  font: 750 9px/1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .1em;
+  white-space: nowrap;
 }
 
-html[data-eva-compat="active"] .dream-operation-panel { position: relative; padding-top: 34px !important; }
+html[data-eva-compat="active"] .dream-composer-status span:last-child { color: var(--dream-accent); }
+html[data-eva-compat="active"] .dream-composer-status[data-state="hold"] span:last-child { color: #efbe55; }
+html[data-eva-compat="active"] .dream-composer-status[data-state="run"] span:last-child {
+  animation: dream-status-pulse 1.35s ease-in-out infinite;
+}
+
+html[data-eva-compat="active"] .dream-operation-panel { position: relative; }
 html[data-eva-compat="active"] .dream-operation-panel::before {
   content: attr(data-dream-operation);
-  position: absolute;
-  inset: 11px 14px auto;
-  color: var(--dream-eva-green);
-  font: 800 10px/1.1 ui-monospace, monospace;
-  letter-spacing: .06em;
-  pointer-events: none;
+  display: block;
+  box-sizing: border-box;
+  min-height: 31px;
+  padding: 9px 14px 8px;
+  color: var(--dream-accent);
+  border-bottom: 1px solid var(--dream-line);
+  background:
+    repeating-linear-gradient(90deg, transparent 0 17px, color-mix(in oklab, var(--dream-accent) 14%, transparent) 17px 18px),
+    color-mix(in oklab, var(--dream-surface-raised) 68%, transparent);
+  font: 800 12px/1.15 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .11em;
+  text-align: start;
 }
 
-html[data-eva-compat="active"] .dream-eva-thread-rail { position: relative; }
+html[data-eva-compat="active"] .dream-eva-thread-rail {
+  position: relative;
+  overflow: visible !important;
+}
+
+html[data-eva-compat="active"] .dream-eva-thread-rail::before {
+  content: "";
+  position: absolute;
+  inset-block: 5px;
+  inset-inline-start: 1px;
+  width: 1px;
+  background: linear-gradient(transparent, var(--dream-line), transparent);
+  opacity: .72;
+}
+
 html[data-eva-compat="active"] .dream-eva-thread-rail::after {
   content: attr(data-dream-rail-phase);
   position: absolute;
-  inset: auto 2px -18px auto;
-  color: var(--dream-eva-green);
-  font: 800 9px/1 ui-monospace, monospace;
+  z-index: 2;
+  inset-inline-start: 2px;
+  top: 50%;
+  transform: translateY(-50%);
+  box-sizing: border-box;
+  min-width: 70px;
+  padding: 5px 7px 4px;
+  color: var(--dream-accent);
+  border: 1px solid color-mix(in oklab, var(--dream-accent) 46%, transparent);
+  border-radius: 3px;
+  background: color-mix(in oklab, var(--dream-surface-raised) 92%, transparent);
+  box-shadow: 0 0 12px color-mix(in oklab, var(--dream-accent) 18%, transparent);
+  font: 800 11px/1.1 "Cascadia Mono", "SFMono-Regular", Consolas, monospace;
+  letter-spacing: .035em;
+  text-align: center;
   white-space: nowrap;
-  pointer-events: none;
 }
 
 html[data-eva-office="active"] .dream-eva-section-label::before {
@@ -176,14 +255,14 @@ html[data-eva-office="active"] .dream-eva-section-label::before {
   display: inline-block;
   height: .9em;
   margin-inline-end: 7px;
-  border-inline-start: 7px solid var(--dream-eva-amber);
+  border-inline-start: 7px solid var(--dream-accent-secondary, var(--dream-accent));
 }
+
 html[data-eva-office="active"] aside.app-shell-left-panel [aria-current="page"] {
-  outline: 1px solid color-mix(in oklab, var(--ds-theme-color-highlight) 55%, transparent);
-  background: color-mix(in oklab, var(--ds-theme-color-highlight) 16%, transparent) !important;
+  outline: 1px solid color-mix(in oklab, var(--dream-accent) 55%, transparent);
+  background: color-mix(in oklab, var(--dream-accent) 16%, transparent) !important;
 }
 
 @media (max-width: 900px) {
   html[data-eva-compat="active"] .dream-magi-title span { display: none; }
-  html[data-eva-compat="active"] .dream-magi-module { padding: 10px; }
 }

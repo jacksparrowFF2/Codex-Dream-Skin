@@ -108,10 +108,10 @@
       return;
     }
     if (!module) {
-      module = document.createElement("section");
+      module = document.createElement("div");
       module.id = MAGI_ID;
       module.className = "dream-magi-module";
-      module.setAttribute("aria-label", "EVA MAGI status");
+      module.setAttribute("aria-hidden", "true");
       module.innerHTML = `
         <div class="dream-magi-title"><strong>MAGI SYSTEM</strong><span>ACTIVE THEME LINK</span></div>
         <div class="dream-magi-cores">
@@ -120,8 +120,8 @@
           <span data-magi="casper" data-state="ok"><b>CASPER 3</b><i></i><em>READY</em></span>
         </div>
         <div class="dream-magi-meters">
-          <span class="dream-magi-meter dream-magi-meter--usage"><span><b>7D USAGE REMAINING</b><strong>CHECK</strong></span><i></i><em>OPEN STATUS TO REFRESH</em></span>
-          <span class="dream-magi-meter dream-magi-meter--context"><span><b>CONTEXT BUFFER · EST.</b><strong>1%</strong></span><i><u></u></i><em>0 TOKENS · 128K SCALE</em></span>
+          <span class="dream-magi-meter dream-magi-meter--usage dream-usage-meter"><span><b>7D USAGE REMAINING</b><strong>CHECK</strong></span><i></i><em>OPEN STATUS TO REFRESH</em></span>
+          <span class="dream-magi-meter dream-magi-meter--context dream-context-meter"><span><b data-field="context-label">CONTEXT BUFFER · EST.</b><strong>0%</strong></span><i><u></u></i><em>0 TOKENS · 128K SCALE</em></span>
         </div>`;
     }
     if (module.parentElement !== panel) panel.prepend(module);
@@ -179,10 +179,18 @@
       status.id = COMPOSER_STATUS_ID;
       status.className = "dream-composer-status";
       status.setAttribute("aria-hidden", "true");
-      status.innerHTML = '<span>PILOT</span><i></i><span>LOCAL</span><i></i><span data-state-label>READY</span>';
+      status.innerHTML = '<span data-field="pilot">PILOT</span><i></i><span data-field="environment">LOCAL</span><i></i><span data-field="state">READY</span>';
     }
     if (status.parentElement !== composer) composer.appendChild(status);
-    setText(status.querySelector("[data-state-label]"), runtimeState.toUpperCase());
+    const modelButton = [...composer.querySelectorAll("button")]
+      .find((button) => /(?:Sol|Codex|GPT)/i.test(button.textContent || ""));
+    const modelMatches = (modelButton?.textContent || "")
+      .match(/(?:GPT[-\s]?\d[\w.-]*|\d(?:\.\d+)+\s*(?:Sol|Codex(?:\s+Spark)?))/gi);
+    const pilot = modelMatches?.at?.(-1)?.replace(/\s+/g, " ").toUpperCase() || "PILOT";
+    setText(status.querySelector('[data-field="pilot"]'), pilot);
+    setText(status.querySelector('[data-field="environment"]'),
+      document.body.textContent.includes("本地") ? "LOCAL" : "ENV");
+    setText(status.querySelector('[data-field="state"]'), runtimeState.toUpperCase());
     status.dataset.state = runtimeState;
   };
 

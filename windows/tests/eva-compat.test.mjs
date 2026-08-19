@@ -17,7 +17,11 @@ for (const token of [
 for (const token of [
   '[data-eva-compat="active"]', ".dream-magi-module", ".dream-operation-panel",
   ".dream-eva-thread-rail", '[data-eva-office="active"]',
+  "grid-template-columns: repeat(3, minmax(0, 1fr))",
 ]) assert.ok(css.includes(token), `missing EVA CSS contract: ${token}`);
+for (const token of ["dream-usage-meter", "dream-context-meter", 'data-field="pilot"']) {
+  assert.ok(source.includes(token), `missing legacy EVA component contract: ${token}`);
+}
 for (const token of ["eva-compat.css", "eva-compat.js", ".update(evaTemplate)"]) {
   assert.ok(injector.includes(token), `injector does not bind EVA asset: ${token}`);
 }
