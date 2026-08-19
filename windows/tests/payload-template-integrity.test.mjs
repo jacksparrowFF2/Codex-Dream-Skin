@@ -100,14 +100,23 @@ function extractThemeArgument(payload) {
   // The renderer IIFE ends with (cssJson, artJson, themeJson); the theme object
   // is the last argument, so read it back from the emitted payload rather than
   // trusting what we passed in.
-  const tail = payload.slice(payload.lastIndexOf("})("));
+  const tail = canonicalPayload(payload).slice(canonicalPayload(payload).lastIndexOf("})("));
   const start = tail.indexOf('{"');
   const end = tail.lastIndexOf("}");
   assert.ok(start > 0 && end > start, "Could not locate the theme argument in the payload.");
   return JSON.parse(tail.slice(start, end + 1));
 }
 
+const EVA_EXTENSION_MARKER = "/* __DREAM_SKIN_EVA_EXTENSION__ */";
+
+function canonicalPayload(payload) {
+  const marker = payload.indexOf(EVA_EXTENSION_MARKER);
+  assert.notEqual(marker, -1, "payload must bind the EVA compatibility extension explicitly");
+  return payload.slice(0, marker);
+}
+
 function extractPayloadArguments(payload) {
+  payload = canonicalPayload(payload);
   const marker = "((cssText, artDataUrl, themeConfig) => {";
   const at = payload.indexOf(marker);
   assert.notEqual(at, -1, "payload must keep the canonical renderer IIFE signature");
